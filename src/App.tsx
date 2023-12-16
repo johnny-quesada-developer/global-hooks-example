@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { GlobalHooksExample } from './GlobalHooksExample';
+import { ReactContextExample } from './ReactContextExample';
+import './SnakeExample';
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  return <>Hello World!</>;
+  return (
+    <div className='flex justify-center'>
+      <ReactContextExample />
+      <GlobalHooksExample />
+    </div>
+  );
 }
 
 export default App;
