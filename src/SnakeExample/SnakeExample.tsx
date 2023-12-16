@@ -4,6 +4,7 @@ import {
   StateGetter,
   StateHook,
   StateSetter,
+  createGlobalState,
   createGlobalStateWithDecoupledFuncs,
 } from 'react-global-state-hooks';
 
@@ -84,22 +85,23 @@ const getDirection = (
 const SnakeExample: React.FC<SnakeExampleProps> = ({ useExternalHook }) => {
   const [props] = useExternalHook();
 
-  const [snakePositions, setSnakePositions] = useState<TSnakeCordinates[]>(
-    () => {
-      const snakePositions: TSnakeCordinates[] = [];
-
-      snakePositions.push(
-        ...new Array(props.snakeSize)
-          .fill(0)
-          .map((_, index) => ({ x: index, y: 0 }))
-      );
-      return snakePositions;
-    }
-  );
+  const [snakePositions, setSnakePositions] = useState<TSnakeCordinates[]>([]);
 
   const matrixIndexs = useMemo(() => {
     return new Array(props.matrix).fill(0).map((_, index) => index);
   }, [props.matrix]);
+
+  useEffect(() => {
+    const snakePositions: TSnakeCordinates[] = [];
+
+    snakePositions.push(
+      ...new Array(props.snakeSize)
+        .fill(0)
+        .map((_, index) => ({ x: index, y: 0 }))
+    );
+
+    setSnakePositions(snakePositions);
+  }, [props.matrix, props.snakeSize]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -167,21 +169,22 @@ class SnakeGame extends HTMLElement {
   constructor() {
     super();
 
-    this.hook = createGlobalStateWithDecoupledFuncs({
+    this.state = createGlobalStateWithDecoupledFuncs({
       matrix: 10,
       snakeSize: 5,
       intervalSpeed: 1000,
     } as TSnakeExampleState);
   }
 
-  private hook: [
+  private state: [
     hook: StateHook<TSnakeExampleState, StateSetter<TSnakeExampleState>, null>,
     getter: StateGetter<TSnakeExampleState>,
     setter: StateSetter<TSnakeExampleState>
   ];
 
   connectedCallback() {
-    const [useExternalHook] = this.hook;
+    const [useExternalHook] = this.state;
+
     const snakeExample = <SnakeExample useExternalHook={useExternalHook} />;
 
     createRoot(this).render(snakeExample);
@@ -199,7 +202,7 @@ class SnakeGame extends HTMLElement {
 
     if (!isProp) return;
 
-    const [, getProps, setProps] = this.hook;
+    const [, getProps, setProps] = this.state;
 
     const propName = SnakeGame._propsMap.get(name) as keyof TSnakeExampleState;
     const newValue = parseInt(newValueString ?? '0');
@@ -219,9 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const snakeGame = document.createElement(SnakeGame.selector);
 
+  document.getElementById('html-content').prepend(snakeGame);
+
   snakeGame.setAttribute('matrix', '10');
   snakeGame.setAttribute('snake-size', '5');
   snakeGame.setAttribute('interval-speed', '100');
-
-  document.getElementById('html-content').prepend(snakeGame);
 });

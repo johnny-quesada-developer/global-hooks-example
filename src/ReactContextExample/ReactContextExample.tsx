@@ -7,12 +7,12 @@ import React, {
   useRef,
 } from 'react';
 
-const CountValueContext = createContext<number>(0);
-
 interface CountSetter {
   increase: () => void;
   decrease: () => void;
 }
+
+const CountValueContext = createContext<number>(0);
 
 const CountSetterContext = createContext<CountSetter>({
   increase: () => {},
