@@ -11,6 +11,24 @@ import {
  */
 const useGlobalNumber = createGlobalState(1);
 
+const GlobalNumberInput: React.FC = () => {
+  const [globalNumber, setGlobalNumber] = useGlobalNumber();
+
+  return (
+    <div className='flex flex-col gap-3 bg-stone-200 rounded-md p-4  h-fit'>
+      <span className='font-bold'>Number: </span>
+      <input
+        autoComplete='off'
+        type='number'
+        value={globalNumber}
+        onChange={(e) => {
+          setGlobalNumber(Number(e.target.value));
+        }}
+      />
+    </div>
+  );
+};
+
 /**
  * The second argument is optional and it can be use to confure local storage persistence
  * or to specify the actions that can be performed on the state.
@@ -269,24 +287,6 @@ const UserInfo: React.FC = () => {
         The default storage suports multiples types of data like Sets, Maps,
         Objects, Arrays, and Primitive data like Dates, Strings,and Numbers.
       </p>
-    </div>
-  );
-};
-
-const GlobalNumberInput: React.FC = () => {
-  const [globalNumber, setGlobalNumber] = useGlobalNumber();
-
-  return (
-    <div className='flex flex-col gap-3 bg-stone-200 rounded-md p-4  h-fit'>
-      <span className='font-bold'>Number: </span>
-      <input
-        autoComplete='off'
-        type='number'
-        value={globalNumber}
-        onChange={(e) => {
-          setGlobalNumber(Number(e.target.value));
-        }}
-      />
     </div>
   );
 };
