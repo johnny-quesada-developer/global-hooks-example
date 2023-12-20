@@ -122,12 +122,14 @@ export const ReactContextExample: React.FC = () => {
   return (
     <CountProvider>
       <div className='p-4 w-96 flex flex-col gap-2'>
-        <h1 className='text-2xl text-center font-bold'>React Context</h1>
+        <h1 className='text-2xl text-center font-bold flex gap-3'>
+          React Context
+        </h1>
 
         <Component1 />
         <Component2 />
-        <CountSetter />
       </div>
+      <CountSetter />
     </CountProvider>
   );
 };

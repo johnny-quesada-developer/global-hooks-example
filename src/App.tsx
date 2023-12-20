@@ -4,9 +4,11 @@ import './SnakeExample';
 
 function App() {
   return (
-    <div className='flex justify-center'>
-      <ReactContextExample />
+    <div>
       <GlobalHooksExample />
+      {/* <div className='mt-4 w-96'>
+        <ReactContextExample />
+      </div> */}
     </div>
   );
 }

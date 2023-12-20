@@ -4,7 +4,6 @@ import {
   StateGetter,
   StateHook,
   StateSetter,
-  createGlobalState,
   createGlobalStateWithDecoupledFuncs,
 } from 'react-global-state-hooks';
 
@@ -27,59 +26,55 @@ type TSnakeCordinates = {
   y: number;
 };
 
-/**
- * The snake should move around the matrix in spiral.
- */
+const RIGHT_DIRECTION = { x: 1, y: 0 };
+const DOWN_DIRECTION = { x: 0, y: 1 };
+const LEFT_DIRECTION = { x: -1, y: 0 };
+const UP_DIRECTION = { x: 0, y: -1 };
+
 const getDirection = (
   prevSnakePositions: TSnakeCordinates[],
   props: TSnakeExampleState
 ): TSnakeCordinates => {
   const lastSnakePosition = prevSnakePositions[prevSnakePositions.length - 1];
 
-  // If the snake is in the top left corner, it should move right.
-  if (lastSnakePosition.x === 0 && lastSnakePosition.y === 0) {
-    return { x: 1, y: 0 }; // right
-  }
+  const isSnakeInTopLeftCorner =
+    lastSnakePosition.x === 0 && lastSnakePosition.y === 0;
 
-  // If the snake is in the top right corner, it should move down.
-  if (lastSnakePosition.x === props.matrix - 1 && lastSnakePosition.y === 0) {
-    return { x: 0, y: 1 }; // down
-  }
+  if (isSnakeInTopLeftCorner) return RIGHT_DIRECTION;
 
-  // If the snake is in the bottom right corner, it should move left.
-  if (
+  const isSnakeInTopRightCorner =
+    lastSnakePosition.x === props.matrix - 1 && lastSnakePosition.y === 0;
+
+  if (isSnakeInTopRightCorner) return DOWN_DIRECTION;
+
+  const isSnakeInBottomRightCorner =
     lastSnakePosition.x === props.matrix - 1 &&
-    lastSnakePosition.y === props.matrix - 1
-  ) {
-    return { x: -1, y: 0 }; // left
-  }
+    lastSnakePosition.y === props.matrix - 1;
 
-  // If the snake is in the bottom left corner, it should move up.
-  if (lastSnakePosition.x === 0 && lastSnakePosition.y === props.matrix - 1) {
-    return { x: 0, y: -1 }; // up
-  }
+  if (isSnakeInBottomRightCorner) return LEFT_DIRECTION;
 
-  // If the snake is in the top row, it should move right.
-  if (lastSnakePosition.x === 0) {
-    return { x: 0, y: -1 }; // up
-  }
+  const isSnakeInBottomLeftCorner =
+    lastSnakePosition.x === 0 && lastSnakePosition.y === props.matrix - 1;
 
-  // If the snake is in the right column, it should move down.
-  if (lastSnakePosition.y === 0) {
-    return { x: 1, y: 0 }; // right
-  }
+  if (isSnakeInBottomLeftCorner) return UP_DIRECTION;
 
-  // If the snake is in the bottom row, it should move left.
-  if (lastSnakePosition.x === props.matrix - 1) {
-    return { x: 0, y: 1 }; // down
-  }
+  const isSnakeInTopRow = lastSnakePosition.x === 0;
 
-  // If the snake is in the left column, it should move up.
-  if (lastSnakePosition.y === props.matrix - 1) {
-    return { x: -1, y: 0 }; // left
-  }
+  if (isSnakeInTopRow) return UP_DIRECTION;
 
-  return { x: 1, y: 0 }; // right
+  const isSnakeInRightColumn = lastSnakePosition.y === 0;
+
+  if (isSnakeInRightColumn) return RIGHT_DIRECTION;
+
+  const isSnakeInBottomRow = lastSnakePosition.x === props.matrix - 1;
+
+  if (isSnakeInBottomRow) return DOWN_DIRECTION;
+
+  const isSnakeInLeftColumn = lastSnakePosition.y === props.matrix - 1;
+
+  if (isSnakeInLeftColumn) return LEFT_DIRECTION;
+
+  return RIGHT_DIRECTION;
 };
 
 const SnakeExample: React.FC<SnakeExampleProps> = ({ useExternalHook }) => {
