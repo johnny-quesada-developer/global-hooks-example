@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
+  BaseMetadata,
   StateGetter,
   StateHook,
   StateSetter,
-  createGlobalStateWithDecoupledFuncs,
+  createGlobalState,
 } from 'react-global-state-hooks';
 
 type TSnakeExampleState = {
@@ -17,7 +18,7 @@ type SnakeExampleProps = {
   useExternalHook: StateHook<
     TSnakeExampleState,
     StateSetter<TSnakeExampleState>,
-    null
+    BaseMetadata
   >;
 };
 
@@ -164,23 +165,17 @@ class SnakeGame extends HTMLElement {
   constructor() {
     super();
 
-    this.state = createGlobalStateWithDecoupledFuncs({
+    this.useHook = createGlobalState({
       matrix: 10,
       snakeSize: 5,
       intervalSpeed: 1000,
     } as TSnakeExampleState);
   }
 
-  private state: [
-    hook: StateHook<TSnakeExampleState, StateSetter<TSnakeExampleState>, null>,
-    getter: StateGetter<TSnakeExampleState>,
-    setter: StateSetter<TSnakeExampleState>
-  ];
+  private useHook: StateHook<TSnakeExampleState, StateSetter<TSnakeExampleState>, BaseMetadata>;
 
   connectedCallback() {
-    const [useExternalHook] = this.state;
-
-    const snakeExample = <SnakeExample useExternalHook={useExternalHook} />;
+    const snakeExample = <SnakeExample useExternalHook={this.useHook} />;
 
     createRoot(this).render(snakeExample);
   }
@@ -197,7 +192,7 @@ class SnakeGame extends HTMLElement {
 
     if (!isProp) return;
 
-    const [, getProps, setProps] = this.state;
+    const [getProps, setProps] = this.useHook.stateControls();
 
     const propName = SnakeGame._propsMap.get(name) as keyof TSnakeExampleState;
     const newValue = parseInt(newValueString ?? '0');

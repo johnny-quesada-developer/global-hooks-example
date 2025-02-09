@@ -1405,11 +1405,6 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.npmjs.org/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz"
   integrity sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==
 
-json-storage-formatter@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/json-storage-formatter/-/json-storage-formatter-1.0.9.tgz#600e4771673d017a3cab03f2ab4d6ea60cc6abea"
-  integrity sha512-Z2aqXz2WCiAY/FLVbcNrDHjFFBrED3BDL9ZQD3fRnKP0BUfuXAjeln5jWEXRJY7Sanj/wSoSpJU6iufdiqhBVw==
-
 json5@^2.2.3:
   version "2.2.3"
   resolved "https://registry.npmjs.org/json5/-/json5-2.2.3.tgz"
@@ -1774,19 +1769,17 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
-react-global-state-hooks@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-3.0.2.tgz#8e30002a08349d8ef3b4e0405cc3ea097abd6689"
-  integrity sha512-Yef4EZFslebpod6DAzxxPloZO9O6n26lsjye3XEAEkFgPnPlz0EFTMyurRlvsn576LQbt6Ltsx6m68WN1yEVCQ==
+react-global-state-hooks@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-7.0.0.tgz#c3d5f4972f0db647f429b9bba79697bef8f3b139"
+  integrity sha512-AuayS/DTROlGZJRFXRZ3OjiZ1iVcM4jqAG+J5DsqIsbEAcRNPex4oyV0mqE4kv9CEnUbwX478NMOz/DmGFAJLw==
   dependencies:
-    react-hooks-global-states "^1.0.2"
+    react-hooks-global-states "^6.0.6"
 
-react-hooks-global-states@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-1.0.2.tgz#485b253e5886cd9c1fae83cd74bef074d739a355"
-  integrity sha512-nk0I785cUT8WY6MQAzaJw7iy7MtKx9MujuqTfKJmQ1HnP+c2MT5isFtfVSFhiEZana4S00/HCnELDtxnJqJxbw==
-  dependencies:
-    json-storage-formatter "^1.0.9"
+react-hooks-global-states@^6.0.6:
+  version "6.0.6"
+  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-6.0.6.tgz#4db76bd55587800340c341c74f3b85e0cd7368b8"
+  integrity sha512-NqolLemonCJ3YXp3KFGv+4s0/ESD6C7NSVSEVhUKXhmgKg3csCmWIhFjSkA/hiGpgqDa5fp1eZck3laf7r+PGg==
 
 react-refresh@^0.14.0:
   version "0.14.0"

@@ -1,9 +1,7 @@
 import React, { useRef } from 'react';
 
 import {
-  StoreTools,
-  createGlobalState,
-  createGlobalStateWithDecoupledFuncs,
+  createGlobalState
 } from 'react-global-state-hooks';
 
 /**
@@ -64,35 +62,36 @@ const initialState: ICounterState = {
  * The countStoreActions is an object that contains all the actions that can be performed on the state.
  * if actions are not specified the 3 position of the tuple will be a setState function.
  */
-const [useCounter, _getCounter, counterActions] =
-  createGlobalStateWithDecoupledFuncs(initialState, {
-    actions: {
-      increase: () => {
-        return ({ setState }: StoreTools<ICounterState>) => {
-          setState((state) => ({
-            ...state,
-            count1: state.count1 + 1,
-          }));
-        };
-      },
-      decrease: () => {
-        return ({ setState }: StoreTools<ICounterState>) => {
-          setState((state) => ({
-            ...state,
-            count1: state.count1 - 1,
-          }));
-        };
-      },
-      countTwoAdd: (num: number) => {
-        return ({ setState }: StoreTools<ICounterState>) => {
-          setState((state) => ({
-            ...state,
-            count2: state.count2 + num,
-          }));
-        };
-      },
-    } as const,
-  });
+const useCounter = createGlobalState(initialState, {
+  actions: {
+    increase: () => {
+      return ({ setState }) => {
+        setState((state) => ({
+          ...state,
+          count1: state.count1 + 1,
+        }));
+      };
+    },
+    decrease: () => {
+      return ({ setState }) => {
+        setState((state) => ({
+          ...state,
+          count1: state.count1 - 1,
+        }));
+      };
+    },
+    countTwoAdd: (num: number) => {
+      return ({ setState }) => {
+        setState((state) => ({
+          ...state,
+          count2: state.count2 + num,
+        }));
+      };
+    },
+  },
+});
+
+const [,counterActions] = useCounter.stateControls();
 
 const useRenderCount = () => {
   const renderCountRef = useRef(0);
