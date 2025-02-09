@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 
 import {
   createGlobalState
-} from 'react-global-state-hooks';
+} from 'react-global-state-hooks/createGlobalState';
 
 /**
  * This is how you create a global state hook.

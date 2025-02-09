@@ -2,11 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   BaseMetadata,
-  StateGetter,
   StateHook,
   StateSetter,
-  createGlobalState,
 } from 'react-global-state-hooks';
+import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
 
 type TSnakeExampleState = {
   matrix?: number;
