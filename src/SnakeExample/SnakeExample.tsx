@@ -4,7 +4,7 @@ import {
   BaseMetadata,
   StateHook,
   StateSetter,
-} from 'react-global-state-hooks';
+} from 'react-global-state-hooks/types';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
 
 type TSnakeExampleState = {
