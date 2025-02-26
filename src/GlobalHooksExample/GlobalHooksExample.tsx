@@ -133,7 +133,7 @@ export const GlobalHooksExample: React.FC = () => {
           <CountSetter />
         </div>
 
-        <StoreJsons />
+        <StoreJson />
       </div>
     </div>
   );
@@ -290,7 +290,7 @@ const UserInfo: React.FC = () => {
   );
 };
 
-const StoreJsons: React.FC = () => {
+const StoreJson: React.FC = () => {
   const [counters] = useCounter();
   const [num] = useGlobalNumber();
   const [userInfo] = useUserInfo();
