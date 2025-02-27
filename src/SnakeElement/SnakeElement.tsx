@@ -8,6 +8,7 @@ declare global {
     interface IntrinsicElements {
       'snake-game': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         matrix?: number;
+        apples?: number;
         'interval-speed'?: number;
       };
     }
@@ -19,6 +20,7 @@ export class SnakeElement extends HTMLElement {
 
   private static _propsMap: Map<string, string> = new Map([
     ['matrix', 'matrix'],
+    ['apples', 'apples'],
     ['interval-speed', 'intervalSpeed'],
   ]);
 
@@ -39,6 +41,14 @@ export class SnakeElement extends HTMLElement {
 
   connectedCallback() {
     createRoot(this).render(<Game useSnakeHtmlProps={this.useSnakeHtmlProps} />);
+  }
+
+  disconnectedCallback() {
+    this.useSnakeHtmlProps.dispose();
+
+    Object.assign(this, {
+      useSnakeHtmlProps: null,
+    });
   }
 
   /**
@@ -64,4 +74,6 @@ export class SnakeElement extends HTMLElement {
   }
 }
 
-customElements.define(SnakeElement.selector, SnakeElement);
+if (!customElements.get(SnakeElement.selector)) {
+  customElements.define(SnakeElement.selector, SnakeElement);
+}

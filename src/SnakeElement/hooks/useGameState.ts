@@ -6,7 +6,7 @@ export const useGameState = (htmlProps: SnakeHtmlProps) => {
   const [gameState, restartGame] = useStableState(() => {
     const values = new Uint8Array(htmlProps.matrix * htmlProps.matrix).fill(0);
 
-    let applesCount = Math.floor(Math.random() * 5) + 5;
+    let applesCount = htmlProps.apples;
     const startPoint = getRandomEmptyPoint(values);
     const snakePositions: Point[] = [startPoint!];
 
@@ -111,7 +111,7 @@ export const useGameState = (htmlProps: SnakeHtmlProps) => {
       usePointValue,
       useScore,
     };
-  }, [htmlProps.matrix]);
+  }, [htmlProps.matrix, htmlProps.apples]);
 
   return { value: gameState.value, restartGame };
 };

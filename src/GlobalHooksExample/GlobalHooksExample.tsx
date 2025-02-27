@@ -83,7 +83,7 @@ export const GlobalHooksExample: React.FC = () => {
           </p>
 
           <code className="bg-stone-200 text-blue-800 p-4 w-full rounded-md text-xs">
-            {'<snake-game interval-speed={100} matrix={10} />'}
+            {'<snake-game interval-speed="100" matrix="10" apples="9" />'}
           </code>
 
           <p className=" w-full">Only the cell with changes will be re-rendered.</p>
