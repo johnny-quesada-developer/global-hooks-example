@@ -10,6 +10,7 @@ declare global {
         matrix?: number;
         apples?: number;
         'interval-speed'?: number;
+        'show-renders'?: number;
       };
     }
   }
@@ -22,6 +23,7 @@ export class SnakeElement extends HTMLElement {
     ['matrix', 'matrix'],
     ['apples', 'apples'],
     ['interval-speed', 'intervalSpeed'],
+    ['show-renders', 'showRenders'],
   ]);
 
   /**

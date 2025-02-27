@@ -17,7 +17,12 @@ export const Matrix: React.FC<MatrixProps> = ({ game, snakeHtmlProps }: MatrixPr
         const point = { x: columnIndex, y: rowIndex };
 
         cells.push(
-          <Cell key={`${rowIndex}-${columnIndex}`} point={point} usePointValue={game.value.usePointValue} />
+          <Cell
+            key={`${rowIndex}-${columnIndex}`}
+            point={point}
+            showRenders={snakeHtmlProps.showRenders}
+            usePointValue={game.value.usePointValue}
+          />
         );
       }
     }

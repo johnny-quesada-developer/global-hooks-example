@@ -4,12 +4,14 @@ export type SnakeHtmlProps = {
   matrix: number;
   apples: number;
   intervalSpeed: number;
+  showRenders: number;
 };
 
 const initialState: SnakeHtmlProps = {
   matrix: 10,
   apples: 0,
   intervalSpeed: 100,
+  showRenders: 0,
 };
 
 export const makeUseSnakeHtmlProps = () => {
