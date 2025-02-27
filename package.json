@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://github.com/johnny-quesada-developer/global-hooks-example",
+  "homepage": "https://johnny-quesada-developer.github.io/global-hooks-example/",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -13,6 +13,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "json-storage-formatter": "^2.0.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-global-state-hooks": "^7.0.5"
