@@ -46,7 +46,7 @@ const [getCounters, counters] = useCounter.stateControls();
 export const GlobalHooksExample: React.FC = () => {
   return (
     <div className="bg-stone-50 flex items-center justify-center">
-      <div className="w-1/2 pt-10 grid grid-cols-2 gap-12">
+      <div className="p-10 w-full md:w-1/2 pt-10 flex flex-col md:grid md:grid-cols-2 gap-12">
         <div className="flex flex-col gap-3 border border-stone-900 p-6 rounded-md">
           <h1 className="text-2xl text-center font-bold">Global Hooks</h1>
 
