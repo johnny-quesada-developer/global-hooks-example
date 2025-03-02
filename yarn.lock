@@ -1774,6 +1774,14 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
+react-global-state-hooks@^8.0.10:
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-8.0.10.tgz#182fc9dbfebfe7e0c11b61657a251b8e7bdb22e4"
+  integrity sha512-a1MPF5XSwKfyj8uUl34Qnfa+AleF7WeNx7HVOw4JmlF0kq3dr4vM2+ViqOHQPxZDgWWJJSAuFaZ9QmPgf66mFw==
+  dependencies:
+    react-global-state-hooks "^8.0.9"
+    react-hooks-global-states "^7.0.8"
+
 react-global-state-hooks@^8.0.9:
   version "8.0.9"
   resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-8.0.9.tgz#70125b666db39171ceaaa4aaea63a370efc77922"
