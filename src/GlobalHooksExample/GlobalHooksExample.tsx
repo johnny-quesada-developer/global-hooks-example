@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import merge from 'easy-css-merge';
 import styles from './GlobalHooksExample.module.scss';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
@@ -239,25 +239,89 @@ const objectStateExample = (() => {
   );
 })();
 
+const reusingSelectorsExample = (() => {
+  const useContacts = createGlobalState(getContactsMock());
+
+  const useContactsArray = useContacts.createSelectorHook((contacts) => {
+    return [...contacts.values()];
+  });
+
+  const useContactsWithJ = useContactsArray.createSelectorHook((contacts) => {
+    return contacts.filter((contact) => {
+      const name = contact.name.toLowerCase();
+      return name.startsWith('j');
+    });
+  });
+
+  const ComponentA = () => {
+    const [contacts] = useContactsWithJ();
+
+    return (
+      <Container
+        className="grid grid-cols-[auto,1fr] gap-2 gap-x-6 auto-rows-min items-start"
+        style={{ gridColumnStart: 'auto 1fr' }}
+      >
+        {contacts.map((contact) => (
+          <React.Fragment key={contact.id}>
+            <label>{contact.name}</label>
+            <label>{contact.email}</label>
+            <hr className="col-span-2 border-emphasis-primary border" />
+          </React.Fragment>
+        ))}
+      </Container>
+    );
+  };
+
+  return (
+    <>
+      <Container className="flex flex-col gap-4">
+        <SubTitle className="">Create reusable selected states</SubTitle>
+
+        <CodeBlock>
+          <pre className="text-xs text-emphasis-interactive">{`const useContactsArray = useContacts.createSelectorHook((contacts) => {`}</pre>
+          <pre className="text-xs">{`  return [...contacts.values()];`}</pre>
+          <pre className="text-xs">{`});`}</pre>
+          <br />
+          <pre className="text-xs text-emphasis-primary">{`// You can create a selector from another selector`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`const useContactsWithJ = useContactsArray.createSelectorHook((contacts) => {`}</pre>
+          <pre className="text-xs">{`  return contacts.filter((contact) => {`}</pre>
+          <pre className="text-xs">{`    const name = contact.name.toLowerCase();`}</pre>
+          <pre className="text-xs">{`    return name.startsWith('j');`}</pre>
+          <pre className="text-xs">{`  });`}</pre>
+          <pre className="text-xs">{`});`}</pre>
+        </CodeBlock>
+
+        <p className="text-xs">Each selector listens only to the state of the hook it was created from.</p>
+      </Container>
+
+      <Container className="flex flex-col gap-4">
+        <SubTitle className="">Contacts whose names start with 'J'</SubTitle>
+        <ComponentA />
+      </Container>
+    </>
+  );
+})();
+
 export const GlobalHooksExample = () => {
   return (
-    <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 md:px-20')}>
+    <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 pb-96 md:px-20')}>
       <Title>Welcome to react-hooks-global-state</Title>
 
       <div
         className={merge(
-          'min-h-screen w-full lg:w-2/3 flex flex-col md:grid grid-cols-1 md:grid-cols-2 gap-6',
+          'min-h-screen w-full lg:w-3/4 flex flex-col md:grid grid-cols-1 md:grid-cols-2 gap-6',
           'auto-rows-min',
           'align-middle place-content-start'
         )}
       >
         <hr className="col-span-2 border-emphasis-secondary border" />
-
         {simpleCounterExample}
 
         <hr className="col-span-2 border-emphasis-secondary border" />
-
         {objectStateExample}
+
+        <hr className="col-span-2 border-emphasis-secondary border" />
+        {reusingSelectorsExample}
       </div>
     </div>
   );
