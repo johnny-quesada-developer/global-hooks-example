@@ -1,395 +1,285 @@
 import React, { useRef, useState } from 'react';
+import merge from 'easy-css-merge';
+import styles from './GlobalHooksExample.module.scss';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
-import '../SnakeElement';
 
-/**
- * Creating a simple global state
- */
-const useCount = createGlobalState(0);
+const Title: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
+  className = '',
+  children,
+}) => {
+  return <h1 className={merge(className, 'text-2xl font-bold text-text-title')}>{children}</h1>;
+};
 
-const CountContainer = () => {
+const SubTitle: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
+  className = '',
+  children,
+}) => {
+  return <h2 className={merge(className, 'text-xl font-semibold text-text-subtitle')}>{children}</h2>;
+};
+
+const Container: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>> = ({
+  className = '',
+  children,
+  ...props
+}) => {
   return (
-    <div>
-      <div className="grid grid-cols-2 auto-rows-auto gap-3">
-        <h1 className="font-bold col-span-2 h-fit ">Welcome to the Global Hooks Example</h1>
+    <div
+      className={merge(
+        className,
+        ' overflow-hidden bg-background-primary rounded-md p-6 border-emphasis-primary border'
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
+const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({
+  className = '',
+  children,
+  ...props
+}) => {
+  return (
+    <button
+      className={merge(
+        className,
+        'bg-emphasis-primary text-background-primary px-4 py-2 rounded-md',
+        'hover:bg-emphasis-secondary transition-colors duration-300'
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+const CodeBlock: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
+  className = '',
+  children,
+}) => {
+  return (
+    <code
+      className={merge(
+        className,
+        styles.code,
+        'bg-white p-6 rounded-md border-emphasis-secondary border',
+        ' flex-wrap'
+      )}
+    >
+      {children}
+    </code>
+  );
+};
+
+const simpleCounterExample = (() => {
+  const useCounter = createGlobalState(0);
+
+  const ComponentA = () => {
+    const [count, setCount] = useCounter();
+    return (
+      <Container className="flex justify-between items-center flex-wrap">
+        <Button onClick={() => setCount((prev) => prev + 1)}>Increment</Button>
+        <label>{count}</label>
+      </Container>
+    );
+  };
+
+  const ComponentB = () => {
+    const [count, setCount] = useCounter();
+
+    return (
+      <Container className="flex justify-between items-center flex-wrap">
+        <Button onClick={() => setCount((prev) => prev - 1)}>Decrement</Button>
+        <label>{count}</label>
+      </Container>
+    );
+  };
+
+  return (
+    <>
+      <Container className="grid grid-cols-2 gap-6 auto-rows-min items-start">
+        <SubTitle className="col-span-2">How to create a global state?</SubTitle>
 
         <ComponentA />
         <ComponentB />
-      </div>
-    </div>
+
+        <CodeBlock className="col-span-2">
+          <pre className="text-xs">{`import { createGlobalState } from 'react-global-state-hooks/createGlobalState';`}</pre>
+          <br />
+          <pre className="text-xs text-green-800">{`// It works like useState, but it's global`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`const useCounter = createGlobalState(0);`}</pre>
+          <br />
+        </CodeBlock>
+      </Container>
+
+      <Container className="flex flex-col gap-4">
+        <SubTitle className="col-span-2">How to share a global state?</SubTitle>
+
+        <CodeBlock>
+          <pre className="text-xs">{`const ComponentA = () => {`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  const [count, setCount] = useCounter();`}</pre>
+          <br />
+          <pre className="text-xs">{`  return <button onClick={() => {`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`    setCount((prev) => prev + 1);`}</pre>
+          <pre className="text-xs">{`  }}>Increment</button>;`}</pre>
+          <pre className="text-xs">{`}; `}</pre>
+        </CodeBlock>
+
+        <CodeBlock>
+          <pre className="text-xs">{`const ComponentB = () => {`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  const [count, setCount] = useCounter();`}</pre>
+          <br />
+          <pre className="text-xs">{`  return <button onClick={() => {`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`    setCount((prev) => prev - 1);`}</pre>
+          <pre className="text-xs">{`  }}>Decrement</button>;`}</pre>
+          <pre className="text-xs">{`}; `}</pre>
+        </CodeBlock>
+      </Container>
+    </>
   );
-};
+})();
 
-const ComponentA = () => {
-  const [count, setCount] = useCount();
+const objectStateExample = (() => {
+  const useContacts = createGlobalState(getContactsMock());
 
-  return (
-    <div className="flex flex-col gap-3">
-      <h1 className="text-blue-800">Component A</h1>
-      <p>Count: {count}</p>
-      <button className="bg-blue-500 w-32 text-white px-2 py-1 rounded" onClick={() => setCount(count + 1)}>
-        Increment
-      </button>
-    </div>
-  );
-};
+  const ComponentA = () => {
+    const [filter, setFilter] = useState('');
 
-const ComponentB = () => {
-  const [count] = useCount();
+    const [contactsLength] = useContacts((contacts) => contacts.size, []);
+    const [filteredContacts] = useContacts(
+      (contacts) => {
+        return [...contacts.values()].filter((contact) =>
+          contact.name.toLowerCase().includes(filter.toLowerCase())
+        );
+      },
+      [filter]
+    );
 
-  return (
-    <div className="flex flex-col gap-3">
-      <h1 className="font-semibold text-blue-800">Component B</h1>
-      <p>Count: {count}</p>
-    </div>
-  );
-};
-
-/**
- * Creating a more complex state
- */
-type ICounterState = {
-  n1: number;
-  n2: number;
-};
-
-const initialState: ICounterState = {
-  n1: 0,
-  n2: 0,
-};
-
-const useCounters = createGlobalState(initialState, {
-  /**
-   * Restricting the manipulation of the state to the specific actions
-   */
-  actions: {
-    increaseN1: () => {
-      return ({ setState }) => {
-        setState((state) => ({
-          ...state,
-          n1: state.n1 + 1,
-        }));
-      };
-    },
-    decreaseN1: () => {
-      return ({ setState }) => {
-        setState((state) => ({
-          ...state,
-          n1: state.n1 - 1,
-        }));
-      };
-    },
-    increaseN2: (num: number) => {
-      return ({ setState }) => {
-        setState((state) => ({
-          ...state,
-          n2: state.n2 + num,
-        }));
-      };
-    },
-  },
-});
-
-const Component1: React.FC = () => {
-  /**
-   * Using selectors
-   */
-  const [n1] = useCounters((state) => state.n1);
-  const renderCounter = useRenderCounter();
-
-  return (
-    <div className="p-4 bg-blue-100 rounded-md w-32 flex flex-col gap-3">
-      <p>
-        <span className=" font-bold">N_1:</span> {n1}
-      </p>
-      <p className="text-sm">Renders: {renderCounter}</p>
-    </div>
-  );
-};
-
-/**
- * Creating a reusable hook that gets cares only about the desired state
- * Changes on n2 will not trigger a re-render on this component
- */
-const useCounterN1 = useCounters.createSelectorHook((state) => state.n1);
-
-const Component2: React.FC = () => {
-  const [n1] = useCounterN1();
-  const renderCounter = useRenderCounter();
-
-  return (
-    <div className="p-4 bg-green-100 rounded-md w-32 flex flex-col gap-3">
-      <p>
-        <span className=" font-bold">N_1:</span> {n1}
-      </p>
-      <p className="text-sm">Renders: {renderCounter}</p>
-    </div>
-  );
-};
-
-const Component3: React.FC = () => {
-  const [n2] = useCounters((state) => state.n2);
-  const renderCounter = useRenderCounter();
-
-  return (
-    <div className="p-4 bg-orange-100 rounded-md w-32 flex flex-col gap-3">
-      <p>
-        <span className=" font-bold">N_2:</span> {n2}
-      </p>
-      <p className="text-sm">Renders: {renderCounter}</p>
-    </div>
-  );
-};
-
-export const GlobalHooksExample: React.FC = () => {
-  return (
-    <div className="bg-stone-50 flex items-center justify-center">
-      <div className="p-10 w-full md:w-2/3 pt-10 flex flex-col md:grid md:grid-cols-2 gap-12">
-        <CountContainer />
-
-        <div className="flex flex-col gap-3 border border-stone-900 p-6 rounded-md">
-          <h1 className="text-2xl text-center font-bold">Global Hooks</h1>
-
-          <div className="grid grid-cols-3 gap-4">
-            <Component1 />
-            <Component2 />
-            <Component3 />
-
-            <p className="col-span-2 w-64">
-              The first two components are using a selector to subscribe only to the{' '}
-              <strong className="text-red-500">N_1</strong> property of the state.
-            </p>
-
-            <p className="col-span-1 w-32">
-              The third component subscribes only to the <strong className="text-red-500">N_2</strong>
-            </p>
-          </div>
-
-          <CountSetter />
-
-          <code className="bg-stone-200 text-blue-800 p-4 w-full rounded-md text-xs">
-            <pre>{`const [n1] = useCounter((state) => state.n1);`}</pre>
-            <br />
-            <pre>{`const [n2] = useCounter((state) => state.n2);`}</pre>
-          </code>
+    return (
+      <Container
+        className="grid grid-cols-[auto,1fr] gap-2 gap-x-6 auto-rows-min items-start"
+        style={{ gridColumnStart: 'auto 1fr', minHeight: `${contactsLength * 3.2}rem` }}
+      >
+        <div className="col-span-2">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="text-xs w-full border-emphasis-primary border rounded-md p-2"
+            onChange={(e) => setFilter(e.target.value)}
+          />
         </div>
 
-        <div className="flex flex-col gap-6 p-6 items-center border border-stone-900 bg-stone-100 rounded-md">
-          <snake-game interval-speed={100} matrix={10} />
+        {filteredContacts.map((contact) => (
+          <React.Fragment key={contact.id}>
+            <label>{contact.name}</label>
+            <label>{contact.email}</label>
+            <hr className="col-span-2 border-emphasis-primary border" />
+          </React.Fragment>
+        ))}
 
-          <p className="">
-            Here we are using a global state to move information from a{' '}
-            <span className=" font-bold">custom html</span> element to a react component.
-          </p>
-
-          <code className="bg-stone-200 text-blue-800 p-4 w-full rounded-md text-xs">
-            {'<snake-game interval-speed="100" matrix="10" apples="9" show-renders="0" />'}
-          </code>
-
-          <p className=" w-full">Only the cell with changes will be re-rendered.</p>
-        </div>
-
-        <UserInfo />
-        <StoreJson />
-      </div>
-    </div>
-  );
-};
-
-/**
- * Getting access to the state and actions without subscribing to the state
- * */
-const [counterRetriever, countersActions] = useCounters.stateControls();
-
-const CountSetter: React.FC = () => {
-  const renderCounter = useRenderCounter();
-
-  console.log(`counters: ${JSON.stringify(counterRetriever())}`);
+        {filteredContacts.length === 0 && (
+          <label className="col-span-2 text-gray-400">No contacts found</label>
+        )}
+      </Container>
+    );
+  };
 
   return (
-    <div className="p-4 bg-yellow-100 rounded-md flex gap-3 justify-between">
-      <div className="flex flex-col gap-3 w-32">
-        <div className="font-bold">N_1</div>
+    <>
+      <Container className="flex flex-col gap-4">
+        <SubTitle className="">Select only what you need</SubTitle>
+        <ComponentA />
+      </Container>
 
-        <button className="bg-blue-500 text-white px-2 py-1 rounded" onClick={countersActions.increaseN1}>
-          Increment
-        </button>
-        <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={countersActions.decreaseN1}>
-          Decrement
-        </button>
-      </div>
+      <Container className="flex flex-col gap-4">
+        <SubTitle className="">How does it look like?</SubTitle>
 
-      <div className="flex flex-col gap-3 w-32">
-        <div className="font-bold">N_2</div>
-        <button
-          className="bg-blue-500 text-white px-2 py-1 rounded"
-          onClick={() => countersActions.increaseN2(1)}
-        >
-          Increment
-        </button>
-        <button
-          className="bg-red-500 text-white px-2 py-1 rounded"
-          onClick={() => countersActions.increaseN2(-1)}
-        >
-          Decrement
-        </button>
-      </div>
+        <CodeBlock>
+          <pre className="text-xs">{`const ContactList = () => {`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  const [filter, setFilter] = useState('');`}</pre>
+          <br />
+          <pre className="text-xs text-emphasis-primary">{`  // You can use selectors to get only what you need`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  const [filteredContacts] = useContacts(`}</pre>
+          <pre className="text-xs">{`    (contacts) => {`}</pre>
+          <pre className="text-xs">{`      return [...contacts.values()].filter((contact) => {`}</pre>
+          <pre className="text-xs">{`        const filter = filter.toLowerCase();`}</pre>
+          <pre className="text-xs">{`        const name = contact.name.toLowerCase();`}</pre>
+          <br />
+          <pre className="text-xs">{`        return name.includes(filter);`}</pre>
+          <pre className="text-xs">{`      });`}</pre>
+          <pre className="text-xs">{`    },`}</pre>
+          <pre className="text-xs text-emphasis-primary">{`    // You can pass an array of dependencies`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`    [filter]`}</pre>
+          <pre className="text-xs">{`  );`}</pre>
+          <br />
+          <pre className="text-xs">{`  return filteredContacts.map(...`}</pre>
+          <pre className="text-xs">{`};`}</pre>
+        </CodeBlock>
 
-      <div className="text-sm w-32">
-        <h1 className="font-bold">Renders: {renderCounter}</h1>
-        This component is not subscribed to any state, it only uses the actions
-      </div>
-    </div>
-  );
-};
-
-const UserInfo: React.FC = () => {
-  const [userInfo, setUserInfo] = useUserInfo();
-
-  return (
-    <div className="p-4 bg-stone-200 rounded-md flex flex-col gap-3">
-      <div className="font-bold text-center">User Info</div>
-      <p>Persisted in LocalStorage. Refresh the page to see the persisted data.</p>
-
-      <div className="flex flex-col gap-2">
-        <span className="font-bold">Name: </span>
-        <input
-          autoComplete="off"
-          type="text"
-          value={userInfo.name}
-          onChange={(e) => {
-            setUserInfo((state) => ({
-              ...state,
-              name: e.target.value,
-            }));
-          }}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <span className="font-bold">Age: </span>
-        <input
-          autoComplete="off"
-          type="number"
-          value={userInfo.age}
-          onChange={(e) => {
-            setUserInfo((state) => ({
-              ...state,
-              age: Number(e.target.value),
-            }));
-          }}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <span className="font-bold">Birthday: </span>
-        <input
-          autoComplete="off"
-          type="date"
-          value={parseDateToISOString(userInfo.birthday)}
-          onChange={(e) => {
-            try {
-              setUserInfo((state) => ({
-                ...state,
-                birthday: new Date(e.target.value) ?? new Date('Invalid date'),
-              }));
-            } catch (error) {
-              console.error('Invalid date');
-            }
-          }}
-        />
-      </div>
-      <p className="text-xs">
-        The default storage suports multiples types of data like Sets, Maps, Objects, Arrays, and Primitive
-        data like Dates, Strings,and Numbers.
-      </p>
-
-      <code className="bg-white text-blue-800 p-4 w-full rounded-md text-xs">{'<UserInfo />'}</code>
-    </div>
-  );
-};
-
-const StoreJson: React.FC = () => {
-  const [userInfo] = useUserInfo(({ name, age, birthday }) => ({ name, age, birthday }));
-
-  const [filter, setFilter] = useState('');
-
-  /**
-   * Dependency array for selectors
-   */
-  const [hobbies] = useUserInfo(
-    (state) => state.hobbies.filter((hobby) => hobby.includes(filter.toLocaleLowerCase())),
-    [filter]
-  );
-
-  return (
-    <div className="flex p-4  bg-stone-200 flex-col gap-3 overflow-hidden">
-      <h1 className="font-bold text-center">Json</h1>
-
-      <div className="">
-        <span className="font-bold text-xs mb-2">User Info:</span>
-        <pre>{JSON.stringify(userInfo, null, 2)}</pre>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <span className="font-bold text-xs mb-2">Hobbies:</span>
-        <input
-          type="text"
-          placeholder="Search..."
-          className="w-32"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-
-        <ul className="pl-4 flex items-center gap-2 h-8">
-          {hobbies.map((hobby, index) => (
-            <li key={index} className="">
-              {hobby},
-            </li>
-          ))}
-
-          {hobbies.length === 0 && <li>No hobbies found</li>}
+        <ul className="text-xs pl-4">
+          <li className="list-disc">The selector will recompute if the state changes</li>
+          <li className="list-disc">The selector will also recompute if the dependencies change</li>
         </ul>
-      </div>
 
-      <code className="bg-white p-4  text-blue-800 w-full rounded-md text-xs">{'<StoreJson />'}</code>
+        <label className="text-xs">
+          Optionally, you can also configure the isEqualRoot if you need specific comparison logic.
+        </label>
+        <CodeBlock>
+          <pre className="text-xs">{`const useContacts = createGlobalState(getContactsMock(), {`}</pre>
+          <pre className="text-xs">{`  ...`}</pre>
+          <pre className="text-xs">{`},`}</pre>
+          <pre className="text-xs">{`{`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  isEqualRoot: (a, b) => a.size === b.size,`}</pre>
+          <pre className="text-xs">{`  dependencies: [filter],`}</pre>
+          <pre className="text-xs">{`});`}</pre>
+        </CodeBlock>
+      </Container>
+    </>
+  );
+})();
+
+export const GlobalHooksExample = () => {
+  return (
+    <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 md:px-20')}>
+      <Title>Welcome to react-hooks-global-state</Title>
+
+      <div
+        className={merge(
+          'min-h-screen w-full lg:w-2/3 flex flex-col md:grid grid-cols-1 md:grid-cols-2 gap-6',
+          'auto-rows-min',
+          'align-middle place-content-start'
+        )}
+      >
+        <hr className="col-span-2 border-emphasis-secondary border" />
+
+        {simpleCounterExample}
+
+        <hr className="col-span-2 border-emphasis-secondary border" />
+
+        {objectStateExample}
+      </div>
     </div>
   );
 };
 
-const userInitialState = {
-  name: 'John Doe',
-  age: 25,
-  birthday: new Date(),
-  hobbies: ['reading', 'gaming', 'hiking', 'coding', 'traveling'],
+type Contact = {
+  id: string;
+  name: string;
+  email: string;
 };
 
-const useUserInfo = createGlobalState(userInitialState, {
-  localStorage: {
-    key: 'user-info',
-    encrypt: true,
-  },
-  callbacks: {
-    onInit: ({ setState }) => {
-      // if the value from the storage has less properties than the initial state
-      // we can merge the two objects
-      setState((state) => ({
-        ...userInitialState,
-        ...state,
-      }));
-    },
-  },
-});
-
-const parseDateToISOString = (date: Date) => {
-  try {
-    return date.toISOString().split('T')[0];
-  } catch (error) {
-    return 'Invalid date';
-  }
-};
-
-const useRenderCounter = () => {
-  const renderCountRef = useRef(0);
-  renderCountRef.current += 1;
-
-  return renderCountRef.current;
-};
+function getContactsMock() {
+  return new Map<string, Contact>([
+    ['1', { id: '1', name: 'John Doe', email: 'johndoe@example.com' }],
+    ['2', { id: '2', name: 'Jane Smith', email: 'janesmith@example.com' }],
+    ['3', { id: '3', name: 'Alice Johnson', email: 'alicej@example.com' }],
+    ['4', { id: '4', name: 'Bob Brown', email: 'bobbrown@example.com' }],
+    ['5', { id: '5', name: 'Charlie Davis', email: 'charlied@example.com' }],
+    ['6', { id: '6', name: 'Diana Evans', email: 'dianaevans@example.com' }],
+    ['7', { id: '7', name: 'Ethan Wright', email: 'ethanw@example.com' }],
+    ['8', { id: '8', name: 'Fiona Green', email: 'fionag@example.com' }],
+    ['9', { id: '9', name: 'George Harris', email: 'georgeh@example.com' }],
+    ['10', { id: '10', name: 'Hannah Lee', email: 'hannahlee@example.com' }],
+  ]);
+}
