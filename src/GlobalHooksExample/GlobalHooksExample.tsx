@@ -11,7 +11,7 @@ const CountContainer = () => {
   return (
     <div>
       <div className="grid grid-cols-2 auto-rows-auto gap-3">
-        <h1 className="font-semibold col-span-2 h-fit ">Welcome to the Global Hooks Example</h1>
+        <h1 className="font-bold col-span-2 h-fit ">Welcome to the Global Hooks Example</h1>
 
         <ComponentA />
         <ComponentB />
@@ -25,7 +25,7 @@ const ComponentA = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <h1 className="font-bold">Component A</h1>
+      <h1 className="text-blue-800">Component A</h1>
       <p>Count: {count}</p>
       <button className="bg-blue-500 w-32 text-white px-2 py-1 rounded" onClick={() => setCount(count + 1)}>
         Increment
@@ -39,7 +39,7 @@ const ComponentB = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <h1 className="font-semibold">Component B</h1>
+      <h1 className="font-semibold text-blue-800">Component B</h1>
       <p>Count: {count}</p>
     </div>
   );

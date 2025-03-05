@@ -79,3 +79,5 @@ export class SnakeElement extends HTMLElement {
 if (!customElements.get(SnakeElement.selector)) {
   customElements.define(SnakeElement.selector, SnakeElement);
 }
+
+export default SnakeElement;
