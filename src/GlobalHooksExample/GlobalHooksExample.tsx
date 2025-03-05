@@ -1,7 +1,53 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
 import '../SnakeElement';
 
+/**
+ * Creating a simple global state
+ */
+const useCount = createGlobalState(0);
+
+const CountContainer = () => {
+  return (
+    <div>
+      <div className="grid grid-cols-2 auto-rows-auto gap-3">
+        <h1 className="font-semibold col-span-2 h-fit ">Welcome to the Global Hooks Example</h1>
+
+        <ComponentA />
+        <ComponentB />
+      </div>
+    </div>
+  );
+};
+
+const ComponentA = () => {
+  const [count, setCount] = useCount();
+
+  return (
+    <div className="flex flex-col gap-3">
+      <h1 className="font-bold">Component A</h1>
+      <p>Count: {count}</p>
+      <button className="bg-blue-500 w-32 text-white px-2 py-1 rounded" onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </div>
+  );
+};
+
+const ComponentB = () => {
+  const [count] = useCount();
+
+  return (
+    <div className="flex flex-col gap-3">
+      <h1 className="font-semibold">Component B</h1>
+      <p>Count: {count}</p>
+    </div>
+  );
+};
+
+/**
+ * Creating a more complex state
+ */
 type ICounterState = {
   n1: number;
   n2: number;
@@ -12,7 +58,10 @@ const initialState: ICounterState = {
   n2: 0,
 };
 
-const useCounter = createGlobalState(initialState, {
+const useCounters = createGlobalState(initialState, {
+  /**
+   * Restricting the manipulation of the state to the specific actions
+   */
   actions: {
     increaseN1: () => {
       return ({ setState }) => {
@@ -41,12 +90,63 @@ const useCounter = createGlobalState(initialState, {
   },
 });
 
-const [getCounters, counters] = useCounter.stateControls();
+const Component1: React.FC = () => {
+  /**
+   * Using selectors
+   */
+  const [n1] = useCounters((state) => state.n1);
+  const renderCounter = useRenderCounter();
+
+  return (
+    <div className="p-4 bg-blue-100 rounded-md w-32 flex flex-col gap-3">
+      <p>
+        <span className=" font-bold">N_1:</span> {n1}
+      </p>
+      <p className="text-sm">Renders: {renderCounter}</p>
+    </div>
+  );
+};
+
+/**
+ * Creating a reusable hook that gets cares only about the desired state
+ * Changes on n2 will not trigger a re-render on this component
+ */
+const useCounterN1 = useCounters.createSelectorHook((state) => state.n1);
+
+const Component2: React.FC = () => {
+  const [n1] = useCounterN1();
+  const renderCounter = useRenderCounter();
+
+  return (
+    <div className="p-4 bg-green-100 rounded-md w-32 flex flex-col gap-3">
+      <p>
+        <span className=" font-bold">N_1:</span> {n1}
+      </p>
+      <p className="text-sm">Renders: {renderCounter}</p>
+    </div>
+  );
+};
+
+const Component3: React.FC = () => {
+  const [n2] = useCounters((state) => state.n2);
+  const renderCounter = useRenderCounter();
+
+  return (
+    <div className="p-4 bg-orange-100 rounded-md w-32 flex flex-col gap-3">
+      <p>
+        <span className=" font-bold">N_2:</span> {n2}
+      </p>
+      <p className="text-sm">Renders: {renderCounter}</p>
+    </div>
+  );
+};
 
 export const GlobalHooksExample: React.FC = () => {
   return (
     <div className="bg-stone-50 flex items-center justify-center">
       <div className="p-10 w-full md:w-2/3 pt-10 flex flex-col md:grid md:grid-cols-2 gap-12">
+        <CountContainer />
+
         <div className="flex flex-col gap-3 border border-stone-900 p-6 rounded-md">
           <h1 className="text-2xl text-center font-bold">Global Hooks</h1>
 
@@ -96,72 +196,41 @@ export const GlobalHooksExample: React.FC = () => {
   );
 };
 
-const Component1: React.FC = () => {
-  const [n1] = useCounter((state) => state.n1);
-  const renderCounter = useRenderCounter();
-
-  return (
-    <div className="p-4 bg-blue-100 rounded-md w-32 flex flex-col gap-3">
-      <p>
-        <span className=" font-bold">N_1:</span> {n1}
-      </p>
-      <p className="text-sm">Renders: {renderCounter}</p>
-    </div>
-  );
-};
-
-const Component2: React.FC = () => {
-  const [n1] = useCounter((state) => state.n1);
-  const renderCounter = useRenderCounter();
-
-  return (
-    <div className="p-4 bg-green-100 rounded-md w-32 flex flex-col gap-3">
-      <p>
-        <span className=" font-bold">N_1:</span> {n1}
-      </p>
-      <p className="text-sm">Renders: {renderCounter}</p>
-    </div>
-  );
-};
-
-const Component3: React.FC = () => {
-  const [n2] = useCounter((state) => state.n2);
-  const renderCounter = useRenderCounter();
-
-  return (
-    <div className="p-4 bg-orange-100 rounded-md w-32 flex flex-col gap-3">
-      <p>
-        <span className=" font-bold">N_2:</span> {n2}
-      </p>
-      <p className="text-sm">Renders: {renderCounter}</p>
-    </div>
-  );
-};
+/**
+ * Getting access to the state and actions without subscribing to the state
+ * */
+const [counterRetriever, countersActions] = useCounters.stateControls();
 
 const CountSetter: React.FC = () => {
   const renderCounter = useRenderCounter();
 
-  console.log(`counters: ${JSON.stringify(getCounters())}`);
+  console.log(`counters: ${JSON.stringify(counterRetriever())}`);
 
   return (
     <div className="p-4 bg-yellow-100 rounded-md flex gap-3 justify-between">
       <div className="flex flex-col gap-3 w-32">
         <div className="font-bold">N_1</div>
 
-        <button className="bg-blue-500 text-white px-2 py-1 rounded" onClick={counters.increaseN1}>
+        <button className="bg-blue-500 text-white px-2 py-1 rounded" onClick={countersActions.increaseN1}>
           Increment
         </button>
-        <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={counters.decreaseN1}>
+        <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={countersActions.decreaseN1}>
           Decrement
         </button>
       </div>
 
       <div className="flex flex-col gap-3 w-32">
         <div className="font-bold">N_2</div>
-        <button className="bg-blue-500 text-white px-2 py-1 rounded" onClick={() => counters.increaseN2(1)}>
+        <button
+          className="bg-blue-500 text-white px-2 py-1 rounded"
+          onClick={() => countersActions.increaseN2(1)}
+        >
           Increment
         </button>
-        <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => counters.increaseN2(-1)}>
+        <button
+          className="bg-red-500 text-white px-2 py-1 rounded"
+          onClick={() => countersActions.increaseN2(-1)}
+        >
           Decrement
         </button>
       </div>
@@ -239,21 +308,46 @@ const UserInfo: React.FC = () => {
 };
 
 const StoreJson: React.FC = () => {
-  const [counters] = useCounter();
-  const [userInfo] = useUserInfo();
+  const [userInfo] = useUserInfo(({ name, age, birthday }) => ({ name, age, birthday }));
+
+  const [filter, setFilter] = useState('');
+
+  /**
+   * Dependency array for selectors
+   */
+  const [hobbies] = useUserInfo(
+    (state) => state.hobbies.filter((hobby) => hobby.includes(filter.toLocaleLowerCase())),
+    [filter]
+  );
 
   return (
     <div className="flex p-4  bg-stone-200 flex-col gap-3 overflow-hidden">
       <h1 className="font-bold text-center">Json</h1>
 
-      <div className=" rounded-md">
+      <div className="">
         <span className="font-bold text-xs mb-2">User Info:</span>
         <pre>{JSON.stringify(userInfo, null, 2)}</pre>
       </div>
 
-      <div className="rounded-md">
-        <span className="font-bold text-xs mb-2">Counters:</span>
-        <pre>{JSON.stringify(counters, null, 2)}</pre>
+      <div className="flex flex-col gap-2">
+        <span className="font-bold text-xs mb-2">Hobbies:</span>
+        <input
+          type="text"
+          placeholder="Search..."
+          className="w-32"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+
+        <ul className="pl-4 flex items-center gap-2 h-8">
+          {hobbies.map((hobby, index) => (
+            <li key={index} className="">
+              {hobby},
+            </li>
+          ))}
+
+          {hobbies.length === 0 && <li>No hobbies found</li>}
+        </ul>
       </div>
 
       <code className="bg-white p-4  text-blue-800 w-full rounded-md text-xs">{'<StoreJson />'}</code>
@@ -261,19 +355,29 @@ const StoreJson: React.FC = () => {
   );
 };
 
-const useUserInfo = createGlobalState(
-  {
-    name: 'John Doe',
-    age: 20,
-    birthday: new Date(),
+const userInitialState = {
+  name: 'John Doe',
+  age: 25,
+  birthday: new Date(),
+  hobbies: ['reading', 'gaming', 'hiking', 'coding', 'traveling'],
+};
+
+const useUserInfo = createGlobalState(userInitialState, {
+  localStorage: {
+    key: 'user-info',
+    encrypt: true,
   },
-  {
-    localStorage: {
-      key: 'user-info',
-      encrypt: true,
+  callbacks: {
+    onInit: ({ setState }) => {
+      // if the value from the storage has less properties than the initial state
+      // we can merge the two objects
+      setState((state) => ({
+        ...userInitialState,
+        ...state,
+      }));
     },
-  }
-);
+  },
+});
 
 const parseDateToISOString = (date: Date) => {
   try {
