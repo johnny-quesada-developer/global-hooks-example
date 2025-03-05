@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import merge from 'easy-css-merge';
 import styles from './GlobalHooksExample.module.scss';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
-import { generateStackHash } from 'react-global-state-hooks';
+import { uniqueId } from 'react-global-state-hooks/uniqueId';
 
 const Title: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
   className = '',
@@ -729,15 +729,15 @@ type Contact = {
 
 function getContactsMock() {
   return new Map<string, Contact>([
-    ['1', { id: '1', name: 'John Doe', email: 'johndoe@example.com' }],
-    ['2', { id: '2', name: 'Jane Smith', email: 'janesmith@example.com' }],
-    ['3', { id: '3', name: 'Alice Johnson', email: 'alicej@example.com' }],
-    ['4', { id: '4', name: 'Bob Brown', email: 'bobbrown@example.com' }],
-    ['5', { id: '5', name: 'Charlie Davis', email: 'charlied@example.com' }],
-    ['6', { id: '6', name: 'Diana Evans', email: 'dianaevans@example.com' }],
-    ['7', { id: '7', name: 'Ethan Wright', email: 'ethanw@example.com' }],
-    ['8', { id: '8', name: 'Fiona Green', email: 'fionag@example.com' }],
-    ['9', { id: '9', name: 'George Harris', email: 'georgeh@example.com' }],
-    ['10', { id: '10', name: 'Hannah Lee', email: 'hannahlee@example.com' }],
+    ['1', { id: uniqueId('c:'), name: 'John Doe', email: 'johndoe@example.com' }],
+    ['2', { id: uniqueId('c:'), name: 'Jane Smith', email: 'janesmith@example.com' }],
+    ['3', { id: uniqueId('c:'), name: 'Alice Johnson', email: 'alicej@example.com' }],
+    ['4', { id: uniqueId('c:'), name: 'Bob Brown', email: 'bobbrown@example.com' }],
+    ['5', { id: uniqueId('c:'), name: 'Charlie Davis', email: 'charlied@example.com' }],
+    ['6', { id: uniqueId('c:'), name: 'Diana Evans', email: 'dianaevans@example.com' }],
+    ['7', { id: uniqueId('c:'), name: 'Ethan Wright', email: 'ethanw@example.com' }],
+    ['8', { id: uniqueId('c:'), name: 'Fiona Green', email: 'fionag@example.com' }],
+    ['9', { id: uniqueId('c:'), name: 'George Harris', email: 'georgeh@example.com' }],
+    ['10', { id: uniqueId('c:'), name: 'Hannah Lee', email: 'hannahlee@example.com' }],
   ]);
 }
