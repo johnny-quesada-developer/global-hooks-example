@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useTransition } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import merge from 'easy-css-merge';
 import styles from './GlobalHooksExample.module.scss';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
@@ -690,42 +690,33 @@ const persistStateExample = (() => {
   );
 })();
 
-const useIsMenuOpen = createGlobalState(false, {
-  actions: {
-    open: () => {
-      return ({ setState }) => {
-        return setState(true);
-      };
-    },
-    close: () => {
-      return ({ setState }) => {
-        return setState(false);
-      };
-    },
-  },
-});
-
-// well use a portal to floating-menu
 const FloatingMenu: React.FC = () => {
   const [, transition] = useTransition();
-  const [isMenuOpen, { open, close }] = useIsMenuOpen();
+  const [isMenuOpen, setIsOpen] = useState(false);
 
-  const _style: React.CSSProperties = {
-    viewTransitionName: 'floating-menu',
-  };
+  const { openMenu, closeMenu, _style } = useMemo(
+    () => ({
+      openMenu: () => setIsOpen(true),
+      closeMenu: () => setIsOpen(false),
+      _style: {
+        viewTransitionName: 'floating-menu',
+      } as React.CSSProperties,
+    }),
+    []
+  );
 
   useEffect(() => {
     if (!isMenuOpen) return;
 
     const root = document.getElementById('root')!;
     const clickOutsideHandler = () => {
-      transition(() => close());
+      transition(() => closeMenu());
     };
 
     root.addEventListener('click', clickOutsideHandler);
 
     return () => root.removeEventListener('click', clickOutsideHandler);
-  }, [close, isMenuOpen, transition]);
+  }, [closeMenu, isMenuOpen, transition]);
 
   return (
     <div className="fixed top-2 left-2">
@@ -740,7 +731,7 @@ const FloatingMenu: React.FC = () => {
             'transition-colors duration-300',
             'animate-[fade-in_0.3s_linear]'
           )}
-          onClick={() => transition(() => open())}
+          onClick={() => transition(() => openMenu())}
         >
           ☰
         </button>
@@ -771,7 +762,7 @@ const FloatingMenu: React.FC = () => {
                   href={`#${section}`}
                   onClick={() => {
                     transition(() => {
-                      close();
+                      closeMenu();
                       document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
                     });
                   }}
