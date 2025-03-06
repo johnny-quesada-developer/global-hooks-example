@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useTransition } from 'react';
 import merge from 'easy-css-merge';
 import styles from './GlobalHooksExample.module.scss';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
 import { uniqueId } from 'react-global-state-hooks/uniqueId';
+import { createPortal } from 'react-dom';
 
 const Title: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
   className = '',
@@ -689,9 +690,117 @@ const persistStateExample = (() => {
   );
 })();
 
+const useIsMenuOpen = createGlobalState(true, {
+  actions: {
+    open: () => {
+      return ({ setState }) => {
+        return setState(true);
+      };
+    },
+    close: () => {
+      return ({ setState }) => {
+        return setState(false);
+      };
+    },
+  },
+});
+
+// well use a portal to floating-menu
+const FloatingMenu: React.FC = () => {
+  const [, transition] = useTransition();
+  const [isMenuOpen, { open, close }] = useIsMenuOpen();
+
+  const _style: React.CSSProperties = {
+    viewTransitionName: 'floating-menu',
+  };
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const root = document.getElementById('root')!;
+    const clickOutsideHandler = () => {
+      transition(() => close());
+    };
+
+    root.addEventListener('click', clickOutsideHandler);
+
+    return () => root.removeEventListener('click', clickOutsideHandler);
+  }, [close, isMenuOpen, transition]);
+
+  return (
+    <div className="fixed top-2 left-2">
+      {!isMenuOpen && (
+        <button
+          style={_style}
+          className={merge(
+            'z-20 rounded-2xl shadow-lg',
+            'w-10 h-10 flex justify-center items-center',
+            'bg-background-primary border-emphasis-primary border rounded-tl-md',
+            'hover:bg-emphasis-primary hover:text-background-primary',
+            'transition-colors duration-300',
+            'animate-[fade-in_0.3s_linear]'
+          )}
+          onClick={() => transition(() => open())}
+        >
+          ☰
+        </button>
+      )}
+
+      {isMenuOpen && (
+        <ul
+          style={_style}
+          className={merge(
+            'bg-background-primary rounded-md',
+            'border border-emphasis-primary',
+            'will-change-auto animate-[clip-down_0.3s_linear]',
+            'shadow-lg'
+          )}
+        >
+          <li className="px-4 py-2 text-text-title font-semibold">Examples</li>
+          <hr className="border-emphasis-primary border border-opacity-20 last-of-type:hidden" />
+
+          {[
+            ['simpleCounterExample', 'Simple Counter'],
+            ['objectStateExample', 'Object State'],
+            ['reusingSelectorsExample', 'Reusing Selectors'],
+            ['listeningToStateChanges', 'Listening to State Changes'],
+          ].map(([section, displayName]) => (
+            <React.Fragment key={section}>
+              <li className="px-4 py-2">
+                <a
+                  href={`#${section}`}
+                  onClick={() => {
+                    transition(() => {
+                      close();
+                      document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+                    });
+                  }}
+                  className="block text-sm text-emphasis-primary hover:text-emphasis-secondary"
+                >
+                  〉{displayName}
+                </a>
+              </li>
+
+              <hr className="border-emphasis-primary border border-opacity-20 last-of-type:hidden" />
+            </React.Fragment>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+const MenuPortal: React.FC<React.PropsWithChildren> = ({ children }) => {
+  return createPortal(children, document.getElementById('floating-menu')!);
+};
+
 export const GlobalHooksExample = () => {
   return (
     <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 pb-96 md:px-20')}>
+      <MenuPortal>
+        <FloatingMenu />
+      </MenuPortal>
+
       <Title>Welcome to react-hooks-global-state</Title>
 
       <div
@@ -701,19 +810,19 @@ export const GlobalHooksExample = () => {
           'align-middle place-content-start'
         )}
       >
-        <hr className="col-span-2 border-emphasis-secondary border" />
+        <hr id="simpleCounterExample" className="col-span-2 border-emphasis-secondary border" />
         {simpleCounterExample}
 
-        <hr className="col-span-2 border-emphasis-secondary border" />
+        <hr id="objectStateExample" className="col-span-2 border-emphasis-secondary border" />
         {objectStateExample}
 
-        <hr className="col-span-2 border-emphasis-secondary border" />
+        <hr id="reusingSelectorsExample" className="col-span-2 border-emphasis-secondary border" />
         {reusingSelectorsExample}
 
-        <hr className="col-span-2 border-emphasis-secondary border" />
+        <hr id="listeningToStateChanges" className="col-span-2 border-emphasis-secondary border" />
         {listeningToStateChanges}
 
-        <hr className="col-span-2 border-emphasis-secondary border" />
+        <hr id="moreListeningToStateChanges" className="col-span-2 border-emphasis-secondary border" />
         {moreListeningToStateChanges}
         {persistStateExample}
       </div>

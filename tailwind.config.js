@@ -23,6 +23,37 @@ export default {
           interactive: '#3590F3',
         },
       },
+      keyframes: {
+        'fade-in': {
+          '0%': {
+            opacity: 0,
+            transform: 'translateY(-10%)',
+          },
+          '50%': {
+            opacity: 1,
+            transform: 'rotateZ(5deg)',
+          },
+          '75%': {
+            transform: 'translateY(5%) rotateZ(-5deg)',
+            opacity: 1,
+          },
+        },
+        'clip-down': {
+          '0%': {
+            opacity: 0,
+            transform: 'translateY(-10%)',
+            clipPath: 'inset(0% 0% 100% 0%)',
+          },
+          '50%': {
+            opacity: 1,
+            transform: 'rotateZ(2deg)',
+            clipPath: 'inset(0% 0% 0% 0%)',
+          },
+          '75%': {
+            transform: 'translateY(5%) rotateZ(-2deg)',
+          },
+        },
+      },
     },
   },
   plugins: [],
