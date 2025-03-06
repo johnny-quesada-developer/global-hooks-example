@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
@@ -27,30 +28,28 @@ export default {
         'fade-in': {
           '0%': {
             opacity: 0,
-            transform: 'translateY(-10%)',
+            transform: 'translateY(-5px)',
           },
           '50%': {
             opacity: 1,
-            transform: 'rotateZ(5deg)',
           },
           '75%': {
-            transform: 'translateY(5%) rotateZ(-5deg)',
+            transform: 'translateY(5px)',
             opacity: 1,
           },
         },
         'clip-down': {
           '0%': {
             opacity: 0,
-            transform: 'translateY(-10%)',
+            transform: 'translateY(-5px)',
             clipPath: 'inset(0% 0% 100% 0%)',
           },
           '50%': {
             opacity: 1,
-            transform: 'rotateZ(2deg)',
             clipPath: 'inset(0% 0% 0% 0%)',
           },
           '75%': {
-            transform: 'translateY(5%) rotateZ(-2deg)',
+            transform: 'translateY(5px)',
           },
         },
       },
