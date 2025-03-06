@@ -12,11 +12,21 @@ const Title: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>
   return <h1 className={merge(className, 'text-2xl font-bold text-text-title')}>{children}</h1>;
 };
 
-const SubTitle: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
-  className = '',
-  children,
-}) => {
-  return <h2 className={merge(className, 'text-xl font-semibold text-text-subtitle')}>{children}</h2>;
+const SubTitle: React.FC<
+  React.PropsWithChildren<
+    React.HTMLAttributes<HTMLElement> & {
+      section?: string;
+    }
+  >
+> = ({ className = '', section, children }) => {
+  return (
+    <h2
+      id={section ?? uniqueId('section:')}
+      className={merge(className, 'text-xl font-semibold text-text-subtitle')}
+    >
+      {children}
+    </h2>
+  );
 };
 
 const Container: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>> = ({
@@ -101,7 +111,9 @@ const simpleCounterExample = (() => {
   return (
     <>
       <Container className="grid grid-cols-2 gap-6 auto-rows-min items-start">
-        <SubTitle className="col-span-2">How to create a global state?</SubTitle>
+        <SubTitle className="col-span-2" section="how-to-create-a-global-state">
+          How to create a global state?
+        </SubTitle>
 
         <ComponentA />
         <ComponentB />
@@ -116,7 +128,9 @@ const simpleCounterExample = (() => {
       </Container>
 
       <Container className="flex flex-col gap-4">
-        <SubTitle className="col-span-2">How to share a global state?</SubTitle>
+        <SubTitle className="col-span-2" section="how-to-share-a-global-state">
+          How to share a global state?
+        </SubTitle>
 
         <CodeBlock>
           <pre className="text-xs">{`const ComponentA = () => {`}</pre>
@@ -190,12 +204,12 @@ const objectStateExample = (() => {
   return (
     <>
       <Container className="flex flex-col gap-4">
-        <SubTitle className="">Select only what you need</SubTitle>
+        <SubTitle section="select-only-what-you-need">Select only what you need</SubTitle>
         <ComponentA />
       </Container>
 
       <Container className="flex flex-col gap-4">
-        <SubTitle className="">How does it look like?</SubTitle>
+        <SubTitle>How does it look like?</SubTitle>
 
         <CodeBlock>
           <pre className="text-xs">{`const ContactList = () => {`}</pre>
@@ -277,7 +291,7 @@ const reusingSelectorsExample = (() => {
   return (
     <>
       <Container className="flex flex-col gap-4">
-        <SubTitle className="">Create reusable selected states</SubTitle>
+        <SubTitle section="create-reusable-selected-states">Create reusable selected states</SubTitle>
 
         <CodeBlock>
           <pre className="text-xs text-emphasis-interactive">{`const useContactsArray = useContacts.createSelectorHook((contacts) => {`}</pre>
@@ -297,7 +311,7 @@ const reusingSelectorsExample = (() => {
       </Container>
 
       <Container className="flex flex-col gap-4">
-        <SubTitle className="">Contacts whose names start with 'J'</SubTitle>
+        <SubTitle>Contacts whose names start with 'J'</SubTitle>
         <ComponentA />
       </Container>
     </>
@@ -390,7 +404,9 @@ const listeningToStateChanges = (() => {
   return (
     <>
       <Container className="flex flex-col gap-4">
-        <SubTitle className="">Retrieve hook controls outside of components</SubTitle>
+        <SubTitle section="retrieve-hook-controls-outside-of-components">
+          Retrieve hook controls outside of components
+        </SubTitle>
 
         <CodeBlock>
           <pre className="text-xs">{`const useProgress = createGlobalState(0);`}</pre>
@@ -419,7 +435,9 @@ const listeningToStateChanges = (() => {
       </Container>
 
       <Container className="flex flex-col gap-4">
-        <SubTitle className="">Subscribe to state changes without a hooks</SubTitle>
+        <SubTitle section="subscribe-to-state-changes-without-a-hooks">
+          Subscribe to state changes without a hooks
+        </SubTitle>
         <ComponentB />
       </Container>
     </>
@@ -514,7 +532,9 @@ const moreListeningToStateChanges = (() => {
 
   return (
     <Container className="grid grid-cols-2 gap-4 gap-x-6 auto-rows-min items-start">
-      <SubTitle className="col-span-2">Hooks who depend other hooks</SubTitle>
+      <SubTitle className="col-span-2" section="hooks-who-depend-other-hooks">
+        Hooks who depend other hooks
+      </SubTitle>
 
       <label className="col-span-2">
         Been able to listen to the state changes without a hook is very useful, let's say that you have and
@@ -616,7 +636,7 @@ const persistStateExample = (() => {
 
   return (
     <Container className="flex flex-col gap-4">
-      <SubTitle className="">Persist state in localStorage</SubTitle>
+      <SubTitle section="persist-state-in-localstorage">Persist state in localStorage</SubTitle>
 
       <p>
         If you are using{' '}
@@ -640,7 +660,7 @@ const persistStateExample = (() => {
         <pre className="text-xs">{`});`}</pre>
       </CodeBlock>
 
-      <SubTitle className="">Custom actions</SubTitle>
+      <SubTitle section="custom-actions">Custom actions</SubTitle>
       <p>You can also restrict the manipulation of the state to and specific set of actions.</p>
 
       <CodeBlock className="col-span-2">
@@ -751,10 +771,15 @@ const FloatingMenu: React.FC = () => {
           <hr className="border-emphasis-primary border border-opacity-20 last-of-type:hidden" />
 
           {[
-            ['simpleCounterExample', 'Simple Counter'],
-            ['objectStateExample', 'Object State'],
-            ['reusingSelectorsExample', 'Reusing Selectors'],
-            ['listeningToStateChanges', 'Listening to State Changes'],
+            ['how-to-create-a-global-state', 'How to create a global state?'],
+            ['how-to-share-a-global-state', 'How to share a global state?'],
+            ['select-only-what-you-need', 'Select only what you need'],
+            ['create-reusable-selected-states', 'Create reusable selected states'],
+            ['retrieve-hook-controls-outside-of-components', 'Retrieve hook controls outside of components'],
+            ['subscribe-to-state-changes-without-a-hooks', 'Subscribe to state changes without a hooks'],
+            ['hooks-who-depend-other-hooks', 'Hooks who depend other hooks'],
+            ['persist-state-in-localstorage', 'Persist state in localStorage'],
+            ['custom-actions', 'Custom actions'],
           ].map(([section, displayName]) => (
             <React.Fragment key={section}>
               <li className="px-4 py-2">
