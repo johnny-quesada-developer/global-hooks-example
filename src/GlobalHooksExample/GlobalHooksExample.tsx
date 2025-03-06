@@ -690,7 +690,7 @@ const persistStateExample = (() => {
   );
 })();
 
-const useIsMenuOpen = createGlobalState(true, {
+const useIsMenuOpen = createGlobalState(false, {
   actions: {
     open: () => {
       return ({ setState }) => {
