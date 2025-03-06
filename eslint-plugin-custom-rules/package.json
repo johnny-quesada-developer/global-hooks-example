@@ -1,0 +1,14 @@
+{
+  "name": "eslint-plugin-custom-rules",
+  "version": "1.0.0",
+  "description": "Custom ESLint rules for my project",
+  "main": "./eslint-plugin-custom-rules.cjs",
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "rules",
+    "custom"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

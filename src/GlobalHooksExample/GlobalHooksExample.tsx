@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import merge from 'easy-css-merge';
 import styles from './GlobalHooksExample.module.scss';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
 import { uniqueId } from 'react-global-state-hooks/uniqueId';
 import { createPortal } from 'react-dom';
+import { isFunction, isNil } from 'json-storage-formatter';
 
 const Title: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
   className = '',
@@ -725,18 +726,9 @@ const FloatingMenu: React.FC = () => {
     []
   );
 
-  useEffect(() => {
-    if (!isMenuOpen) return;
-
-    const root = document.getElementById('root')!;
-    const clickOutsideHandler = () => {
-      transition(() => closeMenu());
-    };
-
-    root.addEventListener('click', clickOutsideHandler);
-
-    return () => root.removeEventListener('click', clickOutsideHandler);
-  }, [closeMenu, isMenuOpen, transition]);
+  useClickOutSide(() => {
+    transition(() => closeMenu());
+  }, [isMenuOpen, () => document.getElementById('floating-menu')!, closeMenu, transition]);
 
   return (
     <div className="fixed top-2 left-2">
@@ -868,3 +860,30 @@ function getContactsMock() {
     ].map((contact) => [contact.id, contact])
   );
 }
+
+const useClickOutSide = (
+  callback: (htmlElement: HTMLElement) => void,
+  [isEnable, element, ...dependencies]: [
+    isEnable: boolean,
+    element: React.RefObject<HTMLElement> | (() => HTMLElement),
+    ...dependencies: unknown[]
+  ]
+) => {
+  const callbackRef = useRef(callback);
+
+  useEffect(() => {
+    if (!isEnable) return;
+
+    const target = isFunction(element) ? element() : element.current;
+    if (isNil(target)) return;
+
+    const root = document.getElementById('root')!;
+    const clickOutsideHandler = (event: MouseEvent) => {
+      if (event.target === target || (event.target as HTMLElement).contains(target)) return;
+      callbackRef.current(target);
+    };
+
+    root.addEventListener('click', clickOutsideHandler);
+    return () => root.removeEventListener('click', clickOutsideHandler);
+  }, [isEnable, element, ...dependencies]);
+};
