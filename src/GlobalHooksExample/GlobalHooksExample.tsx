@@ -737,7 +737,7 @@ const [useMenu, MenuProvider] = createContext(
   }
 );
 
-const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, ...props }) => {
+const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = () => {
   const [, transition] = useTransition();
   const [, { openMenu }] = useMenu();
 
@@ -765,7 +765,7 @@ const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ c
 
 const FloatingMenuContainer: React.FC = () => {
   const [, transition] = useTransition();
-  const [{ isOpen: isMenuOpen }, { closeMenu, openMenu }] = useMenu();
+  const [{ isOpen: isMenuOpen }, { closeMenu }] = useMenu();
 
   useClickOutSide(() => {
     transition(() => {
