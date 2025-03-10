@@ -18,7 +18,7 @@ export const Game: React.FC<GameProps> = ({ useSnakeHtmlProps }) => {
 
   return (
     <>
-      <Score key={Date.now()} useScore={gameState.value.useScore} />
+      <Score key={Date.now()} useScore={gameState.game.useScore} />
       <div className="grid w-fit" style={{ gridTemplateColumns: `repeat(${htmlProps.matrix}, 1fr)` }}>
         <Matrix game={gameState} snakeHtmlProps={htmlProps} />
       </div>

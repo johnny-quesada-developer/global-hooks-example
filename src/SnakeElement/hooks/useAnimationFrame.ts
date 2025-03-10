@@ -1,12 +1,11 @@
-import { useEffect } from 'react';
-import { useStableState } from 'react-global-state-hooks/useStableState';
+import { useEffect, useRef } from 'react';
 
 export const useAnimationFrame = (
   callback: () => void,
   [intervalSpeed, ...dependencies]: readonly [intervalSpeed: number, ...dependencies: unknown[]]
 ) => {
   // recomputes all the time keeping the more recent callback
-  const [callbackRef] = useStableState(() => callback);
+  const callbackRef = useRef(callback);
 
   useEffect(() => {
     let lastTime = 0;
@@ -16,7 +15,7 @@ export const useAnimationFrame = (
       const shouldUpdate = time - lastTime >= intervalSpeed;
       if (shouldUpdate) {
         lastTime = time;
-        callbackRef.value();
+        callbackRef.current();
       }
 
       animationId = requestAnimationFrame(animate);

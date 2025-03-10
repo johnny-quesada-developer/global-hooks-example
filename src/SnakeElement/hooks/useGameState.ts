@@ -118,7 +118,7 @@ export const useGameState = (htmlProps: SnakeHtmlProps) => {
     ];
   }, [trigger, htmlProps.matrix, htmlProps.apples]);
 
-  return { value: gameWrapper?.current ?? null };
+  return { game: gameWrapper?.current ?? null, restartGame };
 };
 
 export const getRandomEmptyPoint = (matrix: Uint8Array): Point | null => {

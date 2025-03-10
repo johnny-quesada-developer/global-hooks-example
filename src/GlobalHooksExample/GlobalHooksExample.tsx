@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import React, { useEffect, useRef, useState, useTransition } from 'react';
 import merge from 'easy-css-merge';
 import styles from './GlobalHooksExample.module.scss';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
@@ -713,10 +713,37 @@ const persistStateExample = (() => {
   );
 })();
 
+const menuTransitionStyle = {
+  viewTransitionName: 'floating-menu',
+} as React.CSSProperties;
+
+const [useMenu, MenuProvider] = createContext(
+  {
+    isOpen: false,
+  },
+  {
+    actions: {
+      openMenu: () => {
+        return ({ setState }) => {
+          setState({ isOpen: true });
+        };
+      },
+      closeMenu: () => {
+        return ({ setState }) => {
+          setState({ isOpen: false });
+        };
+      },
+    },
+  }
+);
+
 const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, ...props }) => {
+  const [, transition] = useTransition();
+  const [, { openMenu }] = useMenu();
+
   return (
     <button
-      style={_style}
+      style={menuTransitionStyle}
       className={merge(
         'z-20 rounded-2xl shadow-lg',
         'w-10 h-10 flex justify-center items-center',
@@ -725,74 +752,34 @@ const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ c
         'transition-colors duration-300',
         'animate-[fade-in_0.3s_linear]'
       )}
-      onClick={() => transition(() => openMenu())}
+      onClick={() =>
+        transition(() => {
+          openMenu();
+        })
+      }
     >
       ☰
     </button>
   );
 };
 
-const [useMenu, MenuProvider] = createContext(
-  {
-    isOpen: false,
-  },
-  {
-    actions: {
-      openMenu:
-        () =>
-        ({ setState }) => {
-          setState({ isOpen: true });
-        },
-      closeMenu:
-        () =>
-        ({ setState }) => {
-          setState({ isOpen: false });
-        },
-    },
-  }
-);
-
 const FloatingMenuContainer: React.FC = () => {
   const [, transition] = useTransition();
-  const [isMenuOpen, setIsOpen] = useState(false);
-
-  const { openMenu, closeMenu, _style } = useMemo(
-    () => ({
-      openMenu: () => setIsOpen(true),
-      closeMenu: () => setIsOpen(false),
-      _style: {
-        viewTransitionName: 'floating-menu',
-      } as React.CSSProperties,
-    }),
-    []
-  );
+  const [{ isOpen: isMenuOpen }, { closeMenu, openMenu }] = useMenu();
 
   useClickOutSide(() => {
-    transition(() => closeMenu());
+    transition(() => {
+      closeMenu();
+    });
   }, [isMenuOpen, () => document.getElementById('floating-menu')!, closeMenu, transition]);
 
   return (
     <div className="fixed top-2 left-2">
-      {!isMenuOpen && (
-        <button
-          style={_style}
-          className={merge(
-            'z-20 rounded-2xl shadow-lg',
-            'w-10 h-10 flex justify-center items-center',
-            'bg-background-primary border-emphasis-primary border rounded-tl-md',
-            'hover:bg-emphasis-primary hover:text-background-primary',
-            'transition-colors duration-300',
-            'animate-[fade-in_0.3s_linear]'
-          )}
-          onClick={() => transition(() => openMenu())}
-        >
-          ☰
-        </button>
-      )}
+      {!isMenuOpen && <MenuButton />}
 
       {isMenuOpen && (
         <ul
-          style={_style}
+          style={menuTransitionStyle}
           className={merge(
             'bg-background-primary rounded-md',
             'border border-emphasis-primary',
@@ -847,7 +834,9 @@ export const GlobalHooksExample = () => {
   return (
     <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 pb-96 md:px-20')}>
       <MenuPortal>
-        <FloatingMenuContainer />
+        <MenuProvider>
+          <FloatingMenuContainer />
+        </MenuProvider>
       </MenuPortal>
 
       <Title>Welcome to react-hooks-global-state</Title>

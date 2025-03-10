@@ -5,7 +5,7 @@ import { Point, EMPTY, FOOD, SNAKE, type GameState } from './useGameState';
 export const useRunGame = (gameState: GameState, htmlProps: SnakeHtmlProps) => {
   useAnimationFrame(() => {
     const { restartGame } = gameState;
-    const { snake, matrix } = gameState.value;
+    const { snake, matrix } = gameState.game;
 
     const head = snake.getHead();
     const nextEmpty = (() => {

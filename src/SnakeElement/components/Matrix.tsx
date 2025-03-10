@@ -21,14 +21,14 @@ export const Matrix: React.FC<MatrixProps> = ({ game, snakeHtmlProps }: MatrixPr
             key={`${rowIndex}-${columnIndex}`}
             point={point}
             showRenders={snakeHtmlProps.showRenders}
-            usePointValue={game.value.usePointValue}
+            usePointValue={game.game.usePointValue}
           />
         );
       }
     }
 
     return cells;
-  }, [game.value.usePointValue, snakeHtmlProps.matrix]);
+  }, [game.game.usePointValue, snakeHtmlProps.matrix]);
 };
 
 export default Matrix;
