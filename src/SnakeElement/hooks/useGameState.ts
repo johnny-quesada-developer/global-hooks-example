@@ -1,9 +1,12 @@
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback, useState, useSyncExternalStore } from 'react';
 import { useStableState } from 'react-global-state-hooks/useStableState';
 import { SnakeHtmlProps } from './makeUseSnakeHtmlProps';
 
 export const useGameState = (htmlProps: SnakeHtmlProps) => {
-  const [gameState, restartGame] = useStableState(() => {
+  const [trigger, setState] = useState({});
+  const restartGame = useCallback(() => setState({}), []);
+
+  const gameWrapper = useStableState(() => {
     const values = new Uint8Array(htmlProps.matrix * htmlProps.matrix).fill(0);
 
     let applesCount = htmlProps.apples;
@@ -105,15 +108,17 @@ export const useGameState = (htmlProps: SnakeHtmlProps) => {
 
     initialize();
 
-    return {
-      matrix,
-      snake,
-      usePointValue,
-      useScore,
-    };
-  }, [htmlProps.matrix, htmlProps.apples]);
+    return [
+      {
+        matrix,
+        snake,
+        usePointValue,
+        useScore,
+      },
+    ];
+  }, [trigger, htmlProps.matrix, htmlProps.apples]);
 
-  return { value: gameState.value, restartGame };
+  return { value: gameWrapper?.current ?? null };
 };
 
 export const getRandomEmptyPoint = (matrix: Uint8Array): Point | null => {
