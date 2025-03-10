@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import merge from 'easy-css-merge';
 import styles from './GlobalHooksExample.module.scss';
 import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
 import { uniqueId } from 'react-global-state-hooks/uniqueId';
 import { createPortal } from 'react-dom';
-import { isFunction, isNil } from 'json-storage-formatter';
+import { isFunction } from 'json-storage-formatter/isFunction';
+import { isNil } from 'json-storage-formatter/isNil';
+import { createContext } from 'react-global-state-hooks/createContext';
 
 const Title: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
   className = '',
@@ -711,7 +713,46 @@ const persistStateExample = (() => {
   );
 })();
 
-const FloatingMenu: React.FC = () => {
+const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ children, ...props }) => {
+  return (
+    <button
+      style={_style}
+      className={merge(
+        'z-20 rounded-2xl shadow-lg',
+        'w-10 h-10 flex justify-center items-center',
+        'bg-background-primary border-emphasis-primary border rounded-tl-md',
+        'hover:bg-emphasis-primary hover:text-background-primary',
+        'transition-colors duration-300',
+        'animate-[fade-in_0.3s_linear]'
+      )}
+      onClick={() => transition(() => openMenu())}
+    >
+      ☰
+    </button>
+  );
+};
+
+const [useMenu, MenuProvider] = createContext(
+  {
+    isOpen: false,
+  },
+  {
+    actions: {
+      openMenu:
+        () =>
+        ({ setState }) => {
+          setState({ isOpen: true });
+        },
+      closeMenu:
+        () =>
+        ({ setState }) => {
+          setState({ isOpen: false });
+        },
+    },
+  }
+);
+
+const FloatingMenuContainer: React.FC = () => {
   const [, transition] = useTransition();
   const [isMenuOpen, setIsOpen] = useState(false);
 
@@ -806,7 +847,7 @@ export const GlobalHooksExample = () => {
   return (
     <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 pb-96 md:px-20')}>
       <MenuPortal>
-        <FloatingMenu />
+        <FloatingMenuContainer />
       </MenuPortal>
 
       <Title>Welcome to react-hooks-global-state</Title>
