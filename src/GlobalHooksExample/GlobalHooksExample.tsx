@@ -322,11 +322,11 @@ const reusingSelectorsExample = (() => {
 })();
 
 const listeningToStateChanges = (() => {
-  const useProgress = createGlobalState(0);
+  const useProgress = createGlobalState(25);
   const [progressRetriever, progressMutator] = useProgress.stateControls();
 
   const ComponentA = () => {
-    const [isPaused, setIsPaused] = useState(false);
+    const [isPaused, setIsPaused] = useState(true);
 
     useEffect(() => {
       if (isPaused) return;
