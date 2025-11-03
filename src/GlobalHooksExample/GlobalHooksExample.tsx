@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useTransition } from 'react';
 import merge from 'easy-css-merge';
 import styles from './GlobalHooksExample.module.scss';
-import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
+import createGlobalState from 'react-global-state-hooks/createGlobalState';
 import { uniqueId } from 'react-global-state-hooks/uniqueId';
 import { createPortal } from 'react-dom';
 import { isFunction } from 'json-storage-formatter/isFunction';
@@ -322,9 +322,9 @@ const reusingSelectorsExample = (() => {
 })();
 
 const listeningToStateChanges = (() => {
-  const useProgress = createGlobalState(25);
-  const [progressRetriever, progressMutator] = useProgress.stateControls();
+  const useProgress = createGlobalState(0);
 
+  // doesn't listen to changes, just retrieve the state value or subscribe to changes
   const ComponentA = () => {
     const [isPaused, setIsPaused] = useState(true);
 
@@ -332,7 +332,7 @@ const listeningToStateChanges = (() => {
       if (isPaused) return;
 
       const interval = setInterval(() => {
-        progressMutator((prev) => (prev + 1) % 101);
+        useProgress.setState((prev) => (prev + 1) % 101);
       }, 100);
 
       return () => clearInterval(interval);
@@ -356,7 +356,7 @@ const listeningToStateChanges = (() => {
       const progressElement = ref.current!;
 
       // returns a function to unsubscribe
-      return progressRetriever((progress) => {
+      return useProgress.subscribe((progress) => {
         progressElement.value = progress;
       });
     }, []);
@@ -448,18 +448,25 @@ const listeningToStateChanges = (() => {
 })();
 
 const moreListeningToStateChanges = (() => {
+  // main state Map<string, Contact>
   const useContacts = createGlobalState(getContactsMock());
-  const [contactsRetriever, setContacts] = useContacts.stateControls();
 
+  // derived fragment from the main state
   const useContactsArray = useContacts.createSelectorHook((contacts) => {
     return [...contacts.values()];
   });
 
-  const useSelectedContactId = createGlobalState(null as string | null, {
+  const initialSelectedContactId = null as string | null;
+
+  const useSelectedContactId = createGlobalState(initialSelectedContactId, {
     callbacks: {
       onInit: ({ setState, getState }) => {
-        contactsRetriever((contacts) => {
-          if (contacts.has(getState()!)) return;
+        // cleans the selected contact if it was deleted from the contacts map
+        useContacts.subscribe((contacts) => {
+          const selectedId = getState();
+          const shouldDelete = selectedId && !contacts.has(selectedId);
+
+          if (!shouldDelete) return;
 
           setState(null);
         });
@@ -513,7 +520,7 @@ const moreListeningToStateChanges = (() => {
           onClick={() => {
             if (!selectedContactId) return;
 
-            setContacts((contacts) => {
+            useContacts.setState((contacts) => {
               contacts.delete(selectedContactId);
               return new Map(contacts);
             });
@@ -524,7 +531,7 @@ const moreListeningToStateChanges = (() => {
 
         <Button
           onClick={() => {
-            setContacts(getContactsMock());
+            useContacts.setState(getContactsMock());
           }}
         >
           Reset Example
@@ -717,7 +724,7 @@ const menuTransitionStyle = {
   viewTransitionName: 'floating-menu',
 } as React.CSSProperties;
 
-const [useMenu, MenuProvider] = createContext(
+const menu = createContext(
   {
     isOpen: false,
   },
@@ -739,7 +746,7 @@ const [useMenu, MenuProvider] = createContext(
 
 const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = () => {
   const [, transition] = useTransition();
-  const [, { openMenu }] = useMenu();
+  const [, { openMenu }] = menu.use();
 
   return (
     <button
@@ -765,7 +772,7 @@ const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = () =
 
 const FloatingMenuContainer: React.FC = () => {
   const [, transition] = useTransition();
-  const [{ isOpen: isMenuOpen }, { closeMenu }] = useMenu();
+  const [{ isOpen: isMenuOpen }, { closeMenu }] = menu.use();
 
   useClickOutSide(() => {
     transition(() => {
@@ -834,9 +841,9 @@ export const GlobalHooksExample = () => {
   return (
     <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 pb-96 md:px-20')}>
       <MenuPortal>
-        <MenuProvider>
+        <menu.Provider>
           <FloatingMenuContainer />
-        </MenuProvider>
+        </menu.Provider>
       </MenuPortal>
 
       <Title>Welcome to react-hooks-global-state</Title>
@@ -917,3 +924,10 @@ const useClickOutSide = (
     return () => root.removeEventListener('click', clickOutsideHandler);
   }, [isEnable, element, ...dependencies]);
 };
+
+// context x4 contacts, selectedContactId
+// provider x4
+// useContext x2
+// useState x 2 contacts, selectedContactId.  value={state} value={setState}
+// useMemo
+// useEffect(, contacts) => cleans selectedContactId if deleted

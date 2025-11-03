@@ -1,11 +1,11 @@
 import { SnakeHtmlProps } from './makeUseSnakeHtmlProps';
 import { useAnimationFrame } from './useAnimationFrame';
-import { Point, EMPTY, FOOD, SNAKE, type GameState } from './useGameState';
+import { Point, EMPTY, FOOD, SNAKE, type GameState } from './useSnakeGame';
 
 export const useRunGame = (gameState: GameState, htmlProps: SnakeHtmlProps) => {
   useAnimationFrame(() => {
-    const { restartGame } = gameState;
-    const { snake, matrix } = gameState.game;
+    const { recompute } = gameState;
+    const { snake, matrix } = gameState.current;
 
     const head = snake.getHead();
     const nextEmpty = (() => {
@@ -29,7 +29,7 @@ export const useRunGame = (gameState: GameState, htmlProps: SnakeHtmlProps) => {
       return getDirection(DIRECTIONS.slice());
     })();
 
-    if (!nextEmpty) return restartGame();
+    if (!nextEmpty) return recompute();
 
     if (matrix.getPointValue(nextEmpty) === EMPTY) {
       snake.removeTail();

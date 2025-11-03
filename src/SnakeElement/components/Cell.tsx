@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { MatrixValue, Point, iconsMap } from '../hooks/useGameState';
+import { MatrixValue, Point, iconsMap } from '../hooks/useSnakeGame';
 
 export const Cell: React.FC<{
   point: Point;

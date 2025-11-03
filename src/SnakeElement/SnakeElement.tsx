@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
-import type { StateHook, StateSetter, BaseMetadata } from 'react-global-state-hooks';
-import { Game } from './components/Game';
+import type { StateHook, BaseMetadata } from 'react-global-state-hooks';
+import { SnakeGame } from './components/Game';
 import { makeUseSnakeHtmlProps, SnakeHtmlProps } from './hooks/makeUseSnakeHtmlProps';
 
 declare global {
@@ -39,10 +39,15 @@ export class SnakeElement extends HTMLElement {
     this.useSnakeHtmlProps = makeUseSnakeHtmlProps();
   }
 
-  private useSnakeHtmlProps: StateHook<SnakeHtmlProps, StateSetter<SnakeHtmlProps>, BaseMetadata>;
+  private useSnakeHtmlProps: StateHook<
+    SnakeHtmlProps,
+    React.Dispatch<React.SetStateAction<SnakeHtmlProps>>,
+    React.Dispatch<React.SetStateAction<SnakeHtmlProps>>,
+    BaseMetadata
+  >;
 
   connectedCallback() {
-    createRoot(this).render(<Game useSnakeHtmlProps={this.useSnakeHtmlProps} />);
+    createRoot(this).render(<SnakeGame useSnakeHtmlProps={this.useSnakeHtmlProps} />);
   }
 
   disconnectedCallback() {
@@ -61,15 +66,13 @@ export class SnakeElement extends HTMLElement {
 
     if (!isProp) return;
 
-    const [getProps, setProps] = this.useSnakeHtmlProps.stateControls();
-
     const propName = SnakeElement._propsMap.get(name) as keyof SnakeHtmlProps;
     const newValue = parseInt(newValueString ?? '0');
-    const currentValue = getProps()[propName];
+    const currentValue = this.useSnakeHtmlProps.getState()[propName];
 
     if (newValueString === undefined || newValue === currentValue) return;
 
-    setProps((prevProps) => ({
+    this.useSnakeHtmlProps.setState((prevProps) => ({
       ...prevProps,
       [propName]: newValue,
     }));

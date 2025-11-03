@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { Cell } from './Cell';
-import type { useGameState } from '../hooks/useGameState';
+import type { useSnakeGame } from '../hooks/useSnakeGame';
 import { SnakeHtmlProps } from '../hooks/makeUseSnakeHtmlProps';
 
 export type MatrixProps = {
-  game: ReturnType<typeof useGameState>;
+  game: ReturnType<typeof useSnakeGame>;
   snakeHtmlProps: SnakeHtmlProps;
 };
 
