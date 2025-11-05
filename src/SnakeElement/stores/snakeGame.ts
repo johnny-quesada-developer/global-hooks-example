@@ -13,7 +13,7 @@ const initialMetadata = {
   matrixValues: new Uint8Array(0),
   remainApplesCount: 0,
   snakePositions: [] as Point[],
-  snake: null as unknown as SnakeApi,
+  snake: null as SnakeApi | null,
 
   // manually handle subscriptions for better performance
   pointsSubscriptions: new Map<`${number}-${number}`, () => void>(),
@@ -31,15 +31,15 @@ const snakeGame = createContext(initialValue, {
     createMatrix(attrs: htmlAttr) {
       const actions = this as SnakeContext['actions'];
 
-      return ({ setState, getState, setMetadata }) => {
+      return ({ setState, getState, getMetadata }) => {
+        const metadata = getMetadata();
+
         const newState = { ...getState(), ...attrs };
 
         const matrixDimension = newState.matrixSize * newState.matrixSize;
         const matrixValues = new Uint8Array(matrixDimension).fill(0);
         const startPoint = getRandomEmptyPoint(matrixValues);
         const snakePositions: Point[] = [startPoint!];
-        const pointsSubscriptions = new Map<`${number}-${number}`, () => void>();
-        const scoreSubscriptions = new Set<() => void>();
 
         const snake: SnakeApi = {
           getHead: () => snakePositions[snakePositions.length - 1],
@@ -53,28 +53,26 @@ const snakeGame = createContext(initialValue, {
           },
         };
 
-        const metadata = {
-          matrixValues,
-          pointsSubscriptions,
-          remainApplesCount: attrs.applesCount,
-          scoreSubscriptions,
-          snake,
+        Object.assign(metadata, {
           snakePositions,
-        };
+          snake,
+          remainApplesCount: attrs.applesCount,
+          matrixValues,
+        });
 
-        setMetadata(metadata);
         setState(newState);
 
         // set first snake position
         actions.setPointValue(startPoint!, SNAKE);
 
         // add apples
-        new Array(metadata.remainApplesCount).fill(0).forEach(() => actions.setPointValue(getRandomEmptyPoint(matrixValues)!, FOOD));
+        new Array(metadata.remainApplesCount)
+          .fill(0)
+          .forEach(() => actions.setPointValue(getRandomEmptyPoint(matrixValues)!, FOOD));
 
-        queueMicrotask(() => {
-          console.log('--- New Matrix ---');
-          actions.printMatrix();
-        });
+        // update all points
+        metadata.pointsSubscriptions.forEach((callback) => callback());
+        metadata.scoreSubscriptions.forEach((callback) => callback());
       };
     },
 
@@ -202,11 +200,6 @@ const snakeGame = createContext(initialValue, {
       };
     },
   },
-  callbacks: {
-    onInit({ actions, getState }) {
-      actions.createMatrix(getState());
-    },
-  },
 });
 
 export type MatrixValue = 0 | 1 | 2;
@@ -275,6 +268,8 @@ type SnakeApi = {
   removeTail: () => void;
 };
 
-export const useMatrixSize = snakeGame.use.createSelectorHook((state) => state.matrixSize);
+export const useMatrixSize = snakeGame.use.createSelectorHook(
+  (state) => state.matrixSize
+);
 
 export default snakeGame;

@@ -9,8 +9,7 @@ export function useRunGame(this: SnakeContext['actions']) {
 
     useAnimationFrame(() => {
       const { snake } = getMetadata();
-
-      actions.printMatrix();
+      if (!snake) return;
 
       const nextEmpty = (() => {
         const head = snake.getHead();

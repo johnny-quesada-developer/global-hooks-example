@@ -1,8 +1,8 @@
 import snakeGame from '../stores/snakeGame';
 
 const Score: React.FC = () => {
-  const game = snakeGame.use.api();
-  const score = game.actions.useScore();
+  const { useScore } = snakeGame.use.actions();
+  const score = useScore();
 
   return (
     <div className="flex items-center gap-2">

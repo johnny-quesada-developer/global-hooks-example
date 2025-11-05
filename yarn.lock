@@ -1958,17 +1958,17 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
-react-global-state-hooks@^12.0.4:
-  version "12.0.4"
-  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-12.0.4.tgz#f0e581ed79a568ddc1c7dae9d58b4ef3bf9bbe97"
-  integrity sha512-UEHl1eCdM5VmaC5SRiJH3qeOmRHkwLDaQ5TjbFgtXCSMp2YqY2bPguUiu9IPhEfwoloikoXjWxGabGKPDAPlwA==
-  dependencies:
-    react-hooks-global-states "^12.0.5"
-
-react-hooks-global-states@^12.0.5:
+react-global-state-hooks@^12.0.5:
   version "12.0.5"
-  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-12.0.5.tgz#e40b36b699444f28ac3f4339e41427ebd941acb0"
-  integrity sha512-5gm4H04+VBhGnqzeBFyTz2+bSu1lZgVyo8tTdqJIhSwVg2dyjfiUaUAWz3tg3O5D49NueMA4frBoRzZMdS5U1A==
+  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-12.0.5.tgz#4f7b0dd0fa9c414c4bd54ea3ab50166bc5f76f2e"
+  integrity sha512-sTt9udGRQ5kmU3pfrnXrlI6tRjMI6wcmUd8sLwvfzrNNLNYsHdN814DqQ+VQzN6xcs4PV6wZPxnChoz7wWHjzg==
+  dependencies:
+    react-hooks-global-states "^12.0.6"
+
+react-hooks-global-states@^12.0.6:
+  version "12.0.6"
+  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-12.0.6.tgz#563fd27673bb36675019a3b491a98dcbb3abfa7a"
+  integrity sha512-l59JomI48JxwP9DxK1SUTIAzcjMhfMM+yjFkTbZ9fV8IUSVL6kMT9ur/0xYiAgl73qwMAbeYl5aDsqbHGCSwuA==
 
 react-refresh@^0.17.0:
   version "0.17.0"
