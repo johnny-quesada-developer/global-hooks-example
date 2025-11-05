@@ -1,34 +1,23 @@
 import React, { useMemo } from 'react';
 import { Cell } from './Cell';
-import type { useSnakeGame } from '../hooks/useSnakeGame';
-import { SnakeHtmlProps } from '../hooks/makeUseSnakeHtmlProps';
+import { useMatrixSize } from '../stores/snakeGame';
 
-export type MatrixProps = {
-  game: ReturnType<typeof useSnakeGame>;
-  snakeHtmlProps: SnakeHtmlProps;
-};
+export const Matrix: React.FC = () => {
+  const matrixSize = useMatrixSize();
 
-export const Matrix: React.FC<MatrixProps> = ({ game, snakeHtmlProps }: MatrixProps) => {
   return useMemo(() => {
     const cells: JSX.Element[] = [];
 
-    for (let rowIndex = 0; rowIndex < snakeHtmlProps.matrix; rowIndex++) {
-      for (let columnIndex = 0; columnIndex < snakeHtmlProps.matrix; columnIndex++) {
+    for (let rowIndex = 0; rowIndex < matrixSize; rowIndex++) {
+      for (let columnIndex = 0; columnIndex < matrixSize; columnIndex++) {
         const point = { x: columnIndex, y: rowIndex };
 
-        cells.push(
-          <Cell
-            key={`${rowIndex}-${columnIndex}`}
-            point={point}
-            showRenders={snakeHtmlProps.showRenders}
-            usePointValue={game.game.usePointValue}
-          />
-        );
+        cells.push(<Cell key={`${rowIndex}-${columnIndex}`} point={point} />);
       }
     }
 
     return cells;
-  }, [game.game.usePointValue, snakeHtmlProps.matrix]);
+  }, [matrixSize]);
 };
 
 export default Matrix;

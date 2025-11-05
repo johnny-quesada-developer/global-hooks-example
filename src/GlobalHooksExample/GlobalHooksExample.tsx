@@ -273,7 +273,7 @@ const reusingSelectorsExample = (() => {
   });
 
   const ComponentA = () => {
-    const [contacts] = useContactsWithJ();
+    const contacts = useContactsWithJ();
 
     return (
       <Container
@@ -475,7 +475,7 @@ const moreListeningToStateChanges = (() => {
   });
 
   const ComponentA = () => {
-    const [contacts] = useContactsArray();
+    const contacts = useContactsArray();
     const [selectedContactId, setSelectedContactId] = useSelectedContactId();
 
     return (

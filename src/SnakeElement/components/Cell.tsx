@@ -1,12 +1,15 @@
 import { useRef } from 'react';
-import { MatrixValue, Point, iconsMap } from '../hooks/useSnakeGame';
+import snakeGame, { Point, iconsMap } from '../stores/snakeGame';
 
-export const Cell: React.FC<{
+type CellProps = {
   point: Point;
-  showRenders: number;
-  usePointValue: (point: Point) => MatrixValue;
-}> = ({ point, showRenders, usePointValue }) => {
-  const pointValue = usePointValue(point);
+};
+
+export const Cell: React.FC<CellProps> = ({ point }) => {
+  const game = snakeGame.use.api();
+  const pointValue = game.actions.usePointValue(point);
+  const [showRenders] = snakeGame.use(({ showRenders }) => showRenders);
+
   const icon = iconsMap[pointValue];
 
   const renderCountRef = useRef(0);

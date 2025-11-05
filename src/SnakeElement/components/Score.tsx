@@ -1,5 +1,8 @@
-export const Score: React.FC<{ useScore: () => number }> = ({ useScore }) => {
-  const score = useScore();
+import snakeGame from '../stores/snakeGame';
+
+const Score: React.FC = () => {
+  const game = snakeGame.use.api();
+  const score = game.actions.useScore();
 
   return (
     <div className="flex items-center gap-2">
@@ -8,3 +11,5 @@ export const Score: React.FC<{ useScore: () => number }> = ({ useScore }) => {
     </div>
   );
 };
+
+export default Score;

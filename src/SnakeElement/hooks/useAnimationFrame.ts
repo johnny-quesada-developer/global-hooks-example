@@ -24,5 +24,6 @@ export const useAnimationFrame = (
     animationId = requestAnimationFrame(animate);
 
     return () => cancelAnimationFrame(animationId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callbackRef, intervalSpeed, ...dependencies]);
 };

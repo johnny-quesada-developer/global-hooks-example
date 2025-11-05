@@ -7,10 +7,11 @@
     <title>Vite + React + TS</title>
   </head>
   <body class="relative">
-    <snake-game></snake-game>
-
+    <div class="flex justify-around p-10">
+      <snake-game speed-interval="2000"></snake-game>
+    </div>
     <div id="floating-menu"></div>
-    <div id="root"></div>
+    <div id="root"></div>        
 
     <script type="module" src="/src/main.tsx"></script>
   </body>

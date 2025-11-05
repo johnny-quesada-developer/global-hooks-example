@@ -971,6 +971,11 @@ eastasianwidth@^0.2.0:
   resolved "https://registry.yarnpkg.com/eastasianwidth/-/eastasianwidth-0.2.0.tgz#696ce2ec0aa0e6ea93a397ffcf24aa7840c827cb"
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
+easy-cancelable-promise@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/easy-cancelable-promise/-/easy-cancelable-promise-1.0.3.tgz#1e8bc14b506f614a145abdffcc25f62133912278"
+  integrity sha512-hPwcwLjDWis8c7xzOYzG1ThuZPIA34VtGCSWIS1G1+rh6oODz3oL5N3rf5FrDBm6p5xe02ismgj6zt/hp4PsjQ==
+
 easy-css-merge@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/easy-css-merge/-/easy-css-merge-1.1.0.tgz"
@@ -1953,17 +1958,17 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
-react-global-state-hooks@^11.0.0:
-  version "11.0.0"
-  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-11.0.0.tgz#0379583d1874a23e08c37f94931758335f0714eb"
-  integrity sha512-5iQPZvhR5eHf6ifBSQHMUDOSS7mjfFNULeEkl4q7VsouT2Jcha+nvvzBaJC9ASS1oOvbQXUE0V6sYakUv/Zu9g==
+react-global-state-hooks@^12.0.4:
+  version "12.0.4"
+  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-12.0.4.tgz#f0e581ed79a568ddc1c7dae9d58b4ef3bf9bbe97"
+  integrity sha512-UEHl1eCdM5VmaC5SRiJH3qeOmRHkwLDaQ5TjbFgtXCSMp2YqY2bPguUiu9IPhEfwoloikoXjWxGabGKPDAPlwA==
   dependencies:
-    react-hooks-global-states "^11.0.0"
+    react-hooks-global-states "^12.0.5"
 
-react-hooks-global-states@^11.0.0:
-  version "11.0.0"
-  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-11.0.0.tgz#e3a2ea67865b11dde5eec7849d642e61714ad653"
-  integrity sha512-6T2LLBDmyYbbaUSYo7486aonIGc3lzmuidrbHH7moM8glPRO2Sjepk73fbMepkmbZLL2XM7nEe+26K6SSKZ4iw==
+react-hooks-global-states@^12.0.5:
+  version "12.0.5"
+  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-12.0.5.tgz#e40b36b699444f28ac3f4339e41427ebd941acb0"
+  integrity sha512-5gm4H04+VBhGnqzeBFyTz2+bSu1lZgVyo8tTdqJIhSwVg2dyjfiUaUAWz3tg3O5D49NueMA4frBoRzZMdS5U1A==
 
 react-refresh@^0.17.0:
   version "0.17.0"
