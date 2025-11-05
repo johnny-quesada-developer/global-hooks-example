@@ -1,11 +1,12 @@
 import { useAnimationFrame } from '../../hooks/useAnimationFrame';
-import snakeGame, { EMPTY, FOOD, SNAKE, type Point } from '../../stores/snakeGame';
+import { Point, EMPTY, FOOD, SNAKE, DIRECTIONS } from '../snakeGame.types';
+import snakeGame from '../../stores/snakeGame';
 
 type SnakeContext = import('../../stores/snakeGame').SnakeContext;
 
 export function useRunGame(this: SnakeContext['actions']) {
-  return ({ actions, getMetadata, getState }: SnakeContext) => {
-    const [speedInterval] = snakeGame.use(({ speedInterval }) => speedInterval);
+  return ({ getMetadata, getState }: SnakeContext) => {
+    const speedInterval = snakeGame.use.select(({ speedInterval }) => speedInterval);
 
     useAnimationFrame(() => {
       const { snake } = getMetadata();
@@ -25,7 +26,7 @@ export function useRunGame(this: SnakeContext['actions']) {
             y: head.y + direction.y,
           };
 
-          const nextPointValue = actions.getPointValue(nextPoint);
+          const nextPointValue = this.getPointValue(nextPoint);
           if (nextPointValue === EMPTY || nextPointValue === FOOD) return nextPoint;
 
           return getDirection(directions.filter((_, index) => index !== dirIndex));
@@ -34,22 +35,15 @@ export function useRunGame(this: SnakeContext['actions']) {
         return getDirection(DIRECTIONS.slice());
       })();
 
-      if (!nextEmpty) return actions.createMatrix(getState());
+      if (!nextEmpty) return this.createMatrix(getState());
 
-      if (actions.getPointValue(nextEmpty) === EMPTY) {
+      if (this.getPointValue(nextEmpty) === EMPTY) {
         snake.removeTail();
       }
 
-      actions.setPointValue(nextEmpty, SNAKE);
+      this.setPointValue(nextEmpty, SNAKE);
     }, [speedInterval]);
   };
 }
-
-const RIGHT_DIRECTION = { x: 1, y: 0 };
-const DOWN_DIRECTION = { x: 0, y: 1 };
-const LEFT_DIRECTION = { x: -1, y: 0 };
-const UP_DIRECTION = { x: 0, y: -1 };
-
-const DIRECTIONS = [RIGHT_DIRECTION, DOWN_DIRECTION, LEFT_DIRECTION, UP_DIRECTION];
 
 export default useRunGame;

@@ -1,7 +1,8 @@
 import React from 'react';
 import Score from '../components/Score';
-import snakeGame, { useMatrixSize } from '../stores/snakeGame';
+import snakeGame from '../stores/snakeGame';
 import { Cell } from './Cell';
+import useMatrixSize from '../stores/hooks/useMatrixSize';
 
 export const SnakeGame: React.FC = () => {
   const { useRunGame } = snakeGame.use.actions();
@@ -14,7 +15,10 @@ export const SnakeGame: React.FC = () => {
     <>
       <Score key={new Date().toString()} />
 
-      <div className="grid w-fit" style={{ gridTemplateColumns: `repeat(${matrixSize}, 1fr)` }}>
+      <div
+        className="grid w-fit"
+        style={{ gridTemplateColumns: `repeat(${matrixSize}, 1fr)` }}
+      >
         {buildCells(matrixSize)}
       </div>
     </>
