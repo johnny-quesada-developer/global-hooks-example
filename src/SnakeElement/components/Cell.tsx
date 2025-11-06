@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import snakeGame from '../stores/snakeGame';
-import { Point, iconsMap } from '../stores/snakeGame.types';
+import { Point, iconsMap } from '../stores/snakeGame/snakeGame.types';
 
 type CellProps = {
   point: Point;

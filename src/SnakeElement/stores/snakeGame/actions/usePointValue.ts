@@ -1,7 +1,7 @@
 import { useMemo, useSyncExternalStore } from 'react';
 import { Point, MatrixValue, Subscribe } from '../snakeGame.types';
 
-type SnakeContext = import('../snakeGame').SnakeContext;
+type SnakeContext = import('..').SnakeContext;
 
 export function usePointValue(this: SnakeContext['actions'], point: Point) {
   const key = `${point.x}-${point.y}` as const;

@@ -1,6 +1,6 @@
 import { MatrixValue, Point } from '../snakeGame.types';
 
-type SnakeContext = import('../snakeGame').SnakeContext;
+type SnakeContext = import('..').SnakeContext;
 
 export function getPointValue(this: SnakeContext['actions'], point: Point) {
   return ({ getMetadata, getState }: SnakeContext): MatrixValue | null => {

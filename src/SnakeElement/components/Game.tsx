@@ -2,7 +2,7 @@ import React from 'react';
 import Score from '../components/Score';
 import snakeGame from '../stores/snakeGame';
 import { Cell } from './Cell';
-import useMatrixSize from '../stores/hooks/useMatrixSize';
+import useMatrixSize from '../stores/snakeGame/hooks/useMatrixSize';
 
 export const SnakeGame: React.FC = () => {
   const { useRunGame } = snakeGame.use.actions();

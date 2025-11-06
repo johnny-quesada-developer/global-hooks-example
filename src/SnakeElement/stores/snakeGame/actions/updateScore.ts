@@ -1,4 +1,4 @@
-type SnakeContext = import('../snakeGame').SnakeContext;
+type SnakeContext = import('..').SnakeContext;
 
 export function updateScore(this: SnakeContext['actions']) {
   return ({ getMetadata }: SnakeContext) => {

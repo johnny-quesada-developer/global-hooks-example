@@ -1,9 +1,10 @@
 import { createRoot } from 'react-dom/client';
 import { SnakeGame } from './components/Game';
-import snakeGame, { initialValue, SnakeContext } from './stores/snakeGame';
+import { initialValue, SnakeContext } from './stores/snakeGame';
 import { createDecoupledPromise } from 'easy-cancelable-promise';
 import { isNil } from 'json-storage-formatter';
 import debounce from './helpers/debounce';
+import snakeGame from './stores/snakeGame';
 
 declare global {
   namespace JSX {

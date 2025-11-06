@@ -1,7 +1,7 @@
 import getRandomEmptyPoint from '../helpers/getRandomEmptyPoint';
 import { EMPTY, FOOD, Point, SNAKE, SnakeApi, htmlAttr } from '../snakeGame.types';
 
-type SnakeContext = import('../snakeGame').SnakeContext;
+type SnakeContext = import('..').SnakeContext;
 
 export function createMatrix(this: SnakeContext['actions'], attrs: htmlAttr) {
   return ({ setState, getState, getMetadata }: SnakeContext) => {

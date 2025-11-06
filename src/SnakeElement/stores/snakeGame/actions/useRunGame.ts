@@ -1,7 +1,7 @@
-import { useAnimationFrame } from '../../hooks/useAnimationFrame';
+import { useAnimationFrame } from '../../../hooks/useAnimationFrame';
 import { Point, EMPTY, FOOD, SNAKE, DIRECTIONS } from '../snakeGame.types';
 
-type SnakeContext = import('../../stores/snakeGame').SnakeContext;
+type SnakeContext = import('..').SnakeContext;
 
 export function useRunGame(this: SnakeContext['actions']) {
   return ({ getMetadata, getState, use }: SnakeContext) => {

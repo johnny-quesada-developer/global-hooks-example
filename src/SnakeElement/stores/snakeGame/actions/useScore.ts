@@ -1,7 +1,7 @@
 import { useMemo, useSyncExternalStore } from 'react';
 import { Subscribe } from '../snakeGame.types';
 
-type SnakeContext = import('../snakeGame').SnakeContext;
+type SnakeContext = import('..').SnakeContext;
 
 /*
  * Hook to get the current score of the snake game

@@ -1,7 +1,7 @@
 import getRandomEmptyPoint from '../helpers/getRandomEmptyPoint';
 import { Point, FOOD, SNAKE } from '../snakeGame.types';
 
-type SnakeContext = import('../snakeGame').SnakeContext;
+type SnakeContext = import('..').SnakeContext;
 
 export function setPointValue(
   this: SnakeContext['actions'],
