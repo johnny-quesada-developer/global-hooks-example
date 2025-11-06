@@ -1,12 +1,11 @@
 import { useAnimationFrame } from '../../hooks/useAnimationFrame';
 import { Point, EMPTY, FOOD, SNAKE, DIRECTIONS } from '../snakeGame.types';
-import snakeGame from '../../stores/snakeGame';
 
 type SnakeContext = import('../../stores/snakeGame').SnakeContext;
 
 export function useRunGame(this: SnakeContext['actions']) {
-  return ({ getMetadata, getState }: SnakeContext) => {
-    const speedInterval = snakeGame.use.select(({ speedInterval }) => speedInterval);
+  return ({ getMetadata, getState, use }: SnakeContext) => {
+    const speedInterval = use.select(({ speedInterval }) => speedInterval);
 
     useAnimationFrame(() => {
       const { snake } = getMetadata();

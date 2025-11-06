@@ -5,12 +5,13 @@
   "type": "module",
   "homepage": "https://johnny-quesada-developer.github.io/global-hooks-example/",
   "scripts": {
-    "dev": "vite",
+    "dev": "yarn ts-check && vite",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "ts-check": "tsc --noEmit"
   },
   "dependencies": {
     "easy-cancelable-promise": "^1.0.3",
@@ -18,7 +19,7 @@
     "json-storage-formatter": "^2.0.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-global-state-hooks": "^12.0.5"
+    "react-global-state-hooks": "^14.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",
