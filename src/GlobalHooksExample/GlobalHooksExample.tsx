@@ -4,15 +4,17 @@ import styles from './GlobalHooksExample.module.scss';
 import createGlobalState from 'react-global-state-hooks/createGlobalState';
 import { uniqueId } from 'react-global-state-hooks/uniqueId';
 import { createPortal } from 'react-dom';
-import { isFunction } from 'json-storage-formatter/isFunction';
-import { isNil } from 'json-storage-formatter/isNil';
+import isFunction from 'json-storage-formatter/isFunction';
+import isNil from 'json-storage-formatter/isNil';
 import { createContext } from 'react-global-state-hooks/createContext';
 
 const Title: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
   className = '',
   children,
 }) => {
-  return <h1 className={merge(className, 'text-2xl font-bold text-text-title')}>{children}</h1>;
+  return (
+    <h1 className={merge(className, 'text-2xl font-bold text-text-title')}>{children}</h1>
+  );
 };
 
 const SubTitle: React.FC<
@@ -32,11 +34,9 @@ const SubTitle: React.FC<
   );
 };
 
-const Container: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>> = ({
-  className = '',
-  children,
-  ...props
-}) => {
+const Container: React.FC<
+  React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>
+> = ({ className = '', children, ...props }) => {
   return (
     <div
       className={merge(
@@ -238,11 +238,14 @@ const objectStateExample = (() => {
 
         <ul className="text-xs pl-4">
           <li className="list-disc">The selector will recompute if the state changes</li>
-          <li className="list-disc">The selector will also recompute if the dependencies change</li>
+          <li className="list-disc">
+            The selector will also recompute if the dependencies change
+          </li>
         </ul>
 
         <label className="text-xs">
-          Optionally, you can also configure the isEqualRoot if you need specific comparison logic.
+          Optionally, you can also configure the isEqualRoot if you need specific
+          comparison logic.
         </label>
         <CodeBlock>
           <pre className="text-xs">{`const useContacts = createGlobalState(getContactsMock(), {`}</pre>
@@ -294,7 +297,9 @@ const reusingSelectorsExample = (() => {
   return (
     <>
       <Container className="flex flex-col gap-4">
-        <SubTitle section="create-reusable-selected-states">Create reusable selected states</SubTitle>
+        <SubTitle section="create-reusable-selected-states">
+          Create reusable selected states
+        </SubTitle>
 
         <CodeBlock>
           <pre className="text-xs text-emphasis-interactive">{`const useContactsArray = useContacts.createSelectorHook((contacts) => {`}</pre>
@@ -310,7 +315,9 @@ const reusingSelectorsExample = (() => {
           <pre className="text-xs">{`});`}</pre>
         </CodeBlock>
 
-        <p className="text-xs">Each selector listens only to the state of the hook it was created from.</p>
+        <p className="text-xs">
+          Each selector listens only to the state of the hook it was created from.
+        </p>
       </Container>
 
       <Container className="flex flex-col gap-4">
@@ -344,7 +351,9 @@ const listeningToStateChanges = (() => {
         style={{ gridColumnStart: 'auto 1fr' }}
       >
         <p>You can listen to the state changes outside hooks</p>
-        <Button onClick={() => setIsPaused((prev) => !prev)}>{isPaused ? 'Resume' : 'Pause'}</Button>
+        <Button onClick={() => setIsPaused((prev) => !prev)}>
+          {isPaused ? 'Resume' : 'Pause'}
+        </Button>
       </Container>
     );
   };
@@ -488,7 +497,8 @@ const moreListeningToStateChanges = (() => {
               {
                 'bg-emphasis-primary': index % 2 === 0,
                 'bg-emphasis-secondary': index % 2 !== 0,
-                '!bg-emphasis-primary !opacity-100 text-white': selectedContactId === contact.id,
+                '!bg-emphasis-primary !opacity-100 text-white':
+                  selectedContactId === contact.id,
               },
               'hover:bg-opacity-50 hover:text-white hover:bg-emphasis-primary'
             )}
@@ -511,7 +521,10 @@ const moreListeningToStateChanges = (() => {
     const [selectedContactId] = useSelectedContactId();
 
     return (
-      <Container className="flex gap-4 items-center flex-wrap" style={{ gridColumnStart: 'auto 1fr' }}>
+      <Container
+        className="flex gap-4 items-center flex-wrap"
+        style={{ gridColumnStart: 'auto 1fr' }}
+      >
         <label>
           <strong>Selected contact Id</strong>: {selectedContactId ?? 'None'}
         </label>
@@ -547,8 +560,8 @@ const moreListeningToStateChanges = (() => {
       </SubTitle>
 
       <label className="col-span-2">
-        Been able to listen to the state changes without a hook is very useful, let's say that you have and
-        state that depends on another one.
+        Been able to listen to the state changes without a hook is very useful, let's say
+        that you have and state that depends on another one.
       </label>
 
       <label className="font-semibold">Component A</label>
@@ -596,6 +609,11 @@ const persistStateExample = (() => {
   const useCounter = createGlobalState(0, {
     localStorage: {
       key: '_counter_from_react_hooks_global_states_example',
+      validator: ({ restored }) => {
+        if (typeof restored !== 'number') {
+          throw new Error('Invalid counter value in localStorage');
+        }
+      },
     },
   });
 
@@ -624,7 +642,10 @@ const persistStateExample = (() => {
     const [count, setCount] = useCounter();
 
     return (
-      <Container className="flex gap-4 items-center flex-wrap" style={{ gridColumnStart: 'auto 1fr' }}>
+      <Container
+        className="flex gap-4 items-center flex-wrap"
+        style={{ gridColumnStart: 'auto 1fr' }}
+      >
         <Button onClick={() => setCount((prev) => prev + 1)}>Increment</Button>
         <Button onClick={() => setCount((prev) => prev - 1)}>Decrement</Button>
         <label className="flex-1 text-right">{count}</label>
@@ -636,7 +657,10 @@ const persistStateExample = (() => {
     const [count, { increment, decrement }] = useCounterWithActions();
 
     return (
-      <Container className="flex gap-4 items-center flex-wrap" style={{ gridColumnStart: 'auto 1fr' }}>
+      <Container
+        className="flex gap-4 items-center flex-wrap"
+        style={{ gridColumnStart: 'auto 1fr' }}
+      >
         <Button onClick={() => increment(count)}>Increment</Button>
         <Button onClick={() => decrement(count)}>Decrement</Button>
         <label className="flex-1 text-right">{count}</label>
@@ -646,7 +670,9 @@ const persistStateExample = (() => {
 
   return (
     <Container className="flex flex-col gap-4">
-      <SubTitle section="persist-state-in-localstorage">Persist state in localStorage</SubTitle>
+      <SubTitle section="persist-state-in-localstorage">
+        Persist state in localStorage
+      </SubTitle>
 
       <p>
         If you are using{' '}
@@ -656,8 +682,8 @@ const persistStateExample = (() => {
         >
           react-global-state-hooks
         </a>
-        , which is the version of the library focused on browser usage, you can persist the state in the
-        localStorage.
+        , which is the version of the library focused on browser usage, you can persist
+        the state in the localStorage.
       </p>
 
       <ComponentA />
@@ -671,7 +697,10 @@ const persistStateExample = (() => {
       </CodeBlock>
 
       <SubTitle section="custom-actions">Custom actions</SubTitle>
-      <p>You can also restrict the manipulation of the state to and specific set of actions.</p>
+      <p>
+        You can also restrict the manipulation of the state to and specific set of
+        actions.
+      </p>
 
       <CodeBlock className="col-span-2">
         <pre className="text-xs">{`const useCounterWithActions = createGlobalState(0, {`}</pre>
@@ -778,7 +807,12 @@ const FloatingMenuContainer: React.FC = () => {
     transition(() => {
       closeMenu();
     });
-  }, [isMenuOpen, () => document.getElementById('floating-menu')!, closeMenu, transition]);
+  }, [
+    isMenuOpen,
+    () => document.getElementById('floating-menu')!,
+    closeMenu,
+    transition,
+  ]);
 
   return (
     <div className="fixed top-2 left-2">
@@ -802,8 +836,14 @@ const FloatingMenuContainer: React.FC = () => {
             ['how-to-share-a-global-state', 'How to share a global state?'],
             ['select-only-what-you-need', 'Select only what you need'],
             ['create-reusable-selected-states', 'Create reusable selected states'],
-            ['retrieve-hook-controls-outside-of-components', 'Retrieve hook controls outside of components'],
-            ['subscribe-to-state-changes-without-a-hooks', 'Subscribe to state changes without a hooks'],
+            [
+              'retrieve-hook-controls-outside-of-components',
+              'Retrieve hook controls outside of components',
+            ],
+            [
+              'subscribe-to-state-changes-without-a-hooks',
+              'Subscribe to state changes without a hooks',
+            ],
             ['hooks-who-depend-other-hooks', 'Hooks who depend other hooks'],
             ['persist-state-in-localstorage', 'Persist state in localStorage'],
             ['custom-actions', 'Custom actions'],
@@ -815,7 +855,9 @@ const FloatingMenuContainer: React.FC = () => {
                   onClick={() => {
                     transition(() => {
                       closeMenu();
-                      document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+                      document
+                        .getElementById(section)
+                        ?.scrollIntoView({ behavior: 'smooth' });
                     });
                   }}
                   className="block text-sm text-emphasis-primary hover:text-emphasis-secondary"
@@ -839,7 +881,14 @@ const MenuPortal: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 export const GlobalHooksExample = () => {
   return (
-    <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 pb-96 md:px-20')}>
+    <div
+      className={merge(
+        styles.bgDots,
+        'text-text-normal',
+        'flex flex-col gap-4',
+        'p-4 pb-96 md:px-20'
+      )}
+    >
       <MenuPortal>
         <menu.Provider>
           <FloatingMenuContainer />
@@ -855,21 +904,51 @@ export const GlobalHooksExample = () => {
           'align-middle place-content-start'
         )}
       >
-        <hr id="simpleCounterExample" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="simpleCounterExample"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {simpleCounterExample}
 
-        <hr id="objectStateExample" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="objectStateExample"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {objectStateExample}
 
-        <hr id="reusingSelectorsExample" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="reusingSelectorsExample"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {reusingSelectorsExample}
 
-        <hr id="listeningToStateChanges" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="listeningToStateChanges"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {listeningToStateChanges}
 
-        <hr id="moreListeningToStateChanges" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="moreListeningToStateChanges"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {moreListeningToStateChanges}
         {persistStateExample}
+
+        <Container
+          className={merge(
+            'col-span-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:place-items-center gap-4'
+          )}
+        >
+          <SubTitle className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 text-left w-full">
+            createContext
+          </SubTitle>
+
+          <snake-game apples={10}></snake-game>
+          <snake-game apples={10}></snake-game>
+          <snake-game apples={10}></snake-game>
+          <snake-game apples={10}></snake-game>
+        </Container>
       </div>
     </div>
   );
@@ -916,7 +995,8 @@ const useClickOutSide = (
 
     const root = document.getElementById('root')!;
     const clickOutsideHandler = (event: MouseEvent) => {
-      if (event.target === target || (event.target as HTMLElement).contains(target)) return;
+      if (event.target === target || (event.target as HTMLElement).contains(target))
+        return;
       callbackRef.current(target);
     };
 

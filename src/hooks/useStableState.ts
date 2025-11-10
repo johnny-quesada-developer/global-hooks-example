@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { shallowCompare } from 'react-global-state-hooks';
+import shallowCompare from 'react-global-state-hooks/shallowCompare';
 
 const uniqueSymbol = Symbol('empty-state');
 

@@ -1545,10 +1545,10 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.npmjs.org/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz"
   integrity sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==
 
-json-storage-formatter@^2.0.9:
-  version "2.0.9"
-  resolved "https://registry.npmjs.org/json-storage-formatter/-/json-storage-formatter-2.0.9.tgz"
-  integrity sha512-8UsiveogvIJp+Bf1h5yTKPsLbt5tgQKmuh7tFru9Z5js2BjrJMHsdqO+KOWJrvaaj0D1TexMLGg1/q0yDrwgQw==
+json-storage-formatter@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/json-storage-formatter/-/json-storage-formatter-3.0.2.tgz#575d92d85b532c8ec91dbf6556f45df3f1e72fea"
+  integrity sha512-H5+2fRLur/hmHa6coYIGJX/j+8o4G0AjGQ+1mirKzdiBYw0V51T0Nyur6/WTQqNo1OsdqZxSjKYgcnnr+Z4SIw==
 
 json5@^2.2.3:
   version "2.2.3"
@@ -1958,17 +1958,20 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
-react-global-state-hooks@^14.0.2:
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-14.0.2.tgz#0a64749f386a962b44466637a756d1312c2ef4d3"
-  integrity sha512-GPbj3f/NKOb8MaqdVvtQf1R6cvOznxDyC1OHLBQf7nefVpvPrfvFFDkx83wsT5bS2VsUQQ7qMWcpEMmaSdMcpA==
+react-global-state-hooks@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-15.0.0.tgz#9a4cce825e1f03fdc951c79d4530c77b81d89a23"
+  integrity sha512-NBaTTjS4RDLgg8pf7EIhcgZagx3NaSEfF8BBYW81Kew+ycBIw0be0On+t6vVy0X3dk8dCHa5SUld6OHC2XnPHw==
   dependencies:
-    react-hooks-global-states "^14.0.2"
+    json-storage-formatter "^3.0.2"
+    react-hooks-global-states "^15.0.0"
 
-react-hooks-global-states@^14.0.2:
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-14.0.2.tgz#7c87acbe97300664e6924ef851dc222f73516445"
-  integrity sha512-6o4NfaweJ5ryLUUmQWZKnIwHaoQWs6AtRT2DCZZ3eYiX3Dco2uZkAlJBfDyYFY9VbBznRetcrMXXCeBJYTVaAA==
+react-hooks-global-states@^15.0.0:
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-15.0.0.tgz#77950474bd8579e87b46c9bbc2c27fa03bb5d072"
+  integrity sha512-njJ/ATo9J3z3aFtYfPqr0jU2+urm/8ClEAXnxREeLjoILOdv+oo8gGPQP2PdYoSdEXh3nVEmMTIcxQQ67NEfTg==
+  dependencies:
+    json-storage-formatter "^3.0.2"
 
 react-refresh@^0.17.0:
   version "0.17.0"

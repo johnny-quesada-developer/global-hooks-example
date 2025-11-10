@@ -91,24 +91,25 @@ export class SnakeElement extends HTMLElement {
   }
 
   async connectedCallback() {
-    const defer = createDecoupledPromise<void>();
-
-    const game = snakeGame.Provider.makeProviderWrapper({
-      onCreated: () => defer.resolve(),
-    });
+    const defer = createDecoupledPromise<SnakeContext>();
 
     this.state = this.readParameters();
 
     createRoot(this).render(
-      <game.wrapper value={this.state as typeof initialValue}>
+      <snakeGame.Provider
+        value={this.state as typeof initialValue}
+        onCreated={(context) => {
+          defer.resolve(context);
+        }}
+      >
         <SnakeGame />
-      </game.wrapper>
+      </snakeGame.Provider>
     );
 
-    await defer.promise;
+    const game = await defer.promise;
 
     // captures the context api
-    this.snakeGame = game.context.current;
+    this.snakeGame = game;
 
     this.startGameDebounce();
   }

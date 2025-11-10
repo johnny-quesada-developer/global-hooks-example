@@ -16,10 +16,9 @@
   "dependencies": {
     "easy-cancelable-promise": "^1.0.3",
     "easy-css-merge": "^1.1.0",
-    "json-storage-formatter": "^2.0.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-global-state-hooks": "^14.0.2"
+    "react-global-state-hooks": "^15.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",

@@ -8,9 +8,11 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:custom-rules/recommended',
   ],
+
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   plugins: ['react-refresh', 'custom-rules'],
+
   rules: {
     'react-refresh/only-export-components': 'off',
     '@typescript-eslint/no-empty-function': 'off',
