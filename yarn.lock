@@ -1545,6 +1545,11 @@ json-storage-formatter@^2.0.9:
   resolved "https://registry.npmjs.org/json-storage-formatter/-/json-storage-formatter-2.0.9.tgz"
   integrity sha512-8UsiveogvIJp+Bf1h5yTKPsLbt5tgQKmuh7tFru9Z5js2BjrJMHsdqO+KOWJrvaaj0D1TexMLGg1/q0yDrwgQw==
 
+json-storage-formatter@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/json-storage-formatter/-/json-storage-formatter-3.0.2.tgz#575d92d85b532c8ec91dbf6556f45df3f1e72fea"
+  integrity sha512-H5+2fRLur/hmHa6coYIGJX/j+8o4G0AjGQ+1mirKzdiBYw0V51T0Nyur6/WTQqNo1OsdqZxSjKYgcnnr+Z4SIw==
+
 json5@^2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.3.tgz#78cd6f1a19bdc12b73db5ad0c61efd66c1e29283"
@@ -1953,17 +1958,20 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
-react-global-state-hooks@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-10.0.0.tgz#572a7845a277218be09e88a587c856e44da59d3a"
-  integrity sha512-xkgei8DPjNKj9vpuamE+SOj3GRWRR05o0gyLSpUJY0ykQ9YKdv9/W36T4NIE2jnNBKOTrIuYhbcUOnI3bAvu/g==
+react-global-state-hooks@^15.0.6:
+  version "15.0.6"
+  resolved "https://registry.yarnpkg.com/react-global-state-hooks/-/react-global-state-hooks-15.0.6.tgz#6231be181f6ea58daad057e65a9f5a2eeb1468ac"
+  integrity sha512-BApAA3BF2PDfo3zPyXo7z3ikeWxFhvC/hr1y0lkBr5R6tN4o5wC7i+pubQ2mgKu8uPatk3a3U5RllOMr3kRwiA==
   dependencies:
-    react-hooks-global-states "^9.0.0"
+    json-storage-formatter "^3.0.2"
+    react-hooks-global-states "^15.0.7"
 
-react-hooks-global-states@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-9.0.0.tgz#0858108cf667a51749b547e5d3062e4c43ec268d"
-  integrity sha512-hQcz9ZJpe7aQhgCGJP/WgLeVSi2pH2Zl9YUaCw1nBpvUZ1t88TTbo2tCvYXwvP/S8ct4VgxALfTO9g2TofFLYw==
+react-hooks-global-states@^15.0.7:
+  version "15.0.7"
+  resolved "https://registry.yarnpkg.com/react-hooks-global-states/-/react-hooks-global-states-15.0.7.tgz#f3221b5b49887cacca041acd531ebed9761a2de7"
+  integrity sha512-687z1JUIc2REdV1lQAR5eEizJ0uvTY1T6gjd36LSU1QU2AZBq5Chm0pqVRpsiGmND1vRJljMOBqNbfrjlKiwAw==
+  dependencies:
+    json-storage-formatter "^3.0.2"
 
 react-refresh@^0.17.0:
   version "0.17.0"

@@ -1,12 +1,11 @@
-import { useCallback, useState, useSyncExternalStore } from 'react';
-import { useStableState } from 'react-global-state-hooks/useStableState';
+import { useCallback, useRef, useState, useSyncExternalStore } from 'react';
 import { SnakeHtmlProps } from './makeUseSnakeHtmlProps';
 
 export const useGameState = (htmlProps: SnakeHtmlProps) => {
   const [trigger, setState] = useState({});
   const restartGame = useCallback(() => setState({}), []);
 
-  const gameWrapper = useStableState(() => {
+  const gameWrapper = useStableRef(() => {
     const values = new Uint8Array(htmlProps.matrix * htmlProps.matrix).fill(0);
 
     let applesCount = htmlProps.apples;
@@ -175,3 +174,22 @@ export type Point = {
 export type Subscribe = (callback: () => void) => () => void;
 
 export type GameState = ReturnType<typeof useGameState>;
+
+const symbol = Symbol('unique_symbol');
+
+function useStableRef<T>(callback: () => T, deps: React.DependencyList) {
+  const ref = useRef<T | typeof symbol>(symbol);
+  const dependenciesRef = useRef<React.DependencyList>(deps);
+
+  const shouldRecreate = ref.current === symbol || !shallowCompare(dependenciesRef.current, deps);
+
+  if (shouldRecreate) ref.current = callback();
+
+  dependenciesRef.current = deps;
+
+  return ref as { current: T };
+}
+
+function shallowCompare(a: React.DependencyList, b: React.DependencyList) {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}

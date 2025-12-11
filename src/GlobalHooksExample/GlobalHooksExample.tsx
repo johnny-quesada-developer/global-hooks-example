@@ -1,97 +1,20 @@
 import React, { useEffect, useRef, useState, useTransition } from 'react';
 import merge from 'easy-css-merge';
 import styles from './GlobalHooksExample.module.scss';
-import { createGlobalState } from 'react-global-state-hooks/createGlobalState';
+import createGlobalState from 'react-global-state-hooks/createGlobalState';
 import { uniqueId } from 'react-global-state-hooks/uniqueId';
 import { createPortal } from 'react-dom';
 import { isFunction } from 'json-storage-formatter/isFunction';
 import { isNil } from 'json-storage-formatter/isNil';
 import { createContext } from 'react-global-state-hooks/createContext';
 
-const Title: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
-  className = '',
-  children,
-}) => {
-  return <h1 className={merge(className, 'text-2xl font-bold text-text-title')}>{children}</h1>;
-};
-
-const SubTitle: React.FC<
-  React.PropsWithChildren<
-    React.HTMLAttributes<HTMLElement> & {
-      section?: string;
-    }
-  >
-> = ({ className = '', section, children }) => {
-  return (
-    <h2
-      id={section ?? uniqueId('section:')}
-      className={merge(className, 'text-xl font-semibold text-text-subtitle')}
-    >
-      {children}
-    </h2>
-  );
-};
-
-const Container: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>> = ({
-  className = '',
-  children,
-  ...props
-}) => {
-  return (
-    <div
-      className={merge(
-        className,
-        ' overflow-hidden bg-background-primary rounded-md p-6 border-emphasis-primary border'
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
-
-const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({
-  className = '',
-  children,
-  ...props
-}) => {
-  return (
-    <button
-      className={merge(
-        className,
-        'bg-emphasis-primary text-background-primary px-4 py-2 rounded-md',
-        'hover:bg-emphasis-secondary transition-colors duration-300'
-      )}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
-
-const CodeBlock: React.FC<React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>> = ({
-  className = '',
-  children,
-}) => {
-  return (
-    <code
-      className={merge(
-        className,
-        styles.code,
-        'bg-white p-6 rounded-md border-emphasis-secondary border',
-        ' flex-wrap'
-      )}
-    >
-      {children}
-    </code>
-  );
-};
-
+//  * Start simple: use global state just like useState
 const simpleCounterExample = (() => {
   const useCounter = createGlobalState(0);
 
   const ComponentA = () => {
     const [count, setCount] = useCounter();
+
     return (
       <Container className="flex justify-between items-center flex-wrap">
         <Button onClick={() => setCount((prev) => prev + 1)}>Increment</Button>
@@ -122,11 +45,10 @@ const simpleCounterExample = (() => {
         <ComponentB />
 
         <CodeBlock className="col-span-2">
-          <pre className="text-xs">{`import { createGlobalState } from 'react-global-state-hooks/createGlobalState';`}</pre>
+          <pre className="text-xs">{`import createGlobalState from 'react-global-state-hooks/createGlobalState';`}</pre>
           <br />
           <pre className="text-xs text-green-800">{`// It works like useState, but it's global`}</pre>
           <pre className="text-xs text-emphasis-interactive">{`const useCounter = createGlobalState(0);`}</pre>
-          <br />
         </CodeBlock>
       </Container>
 
@@ -160,12 +82,14 @@ const simpleCounterExample = (() => {
 })();
 
 const objectStateExample = (() => {
+  // contacts => Map<string, {id: string; name: string; email: string}>
   const useContacts = createGlobalState(getContactsMock());
 
   const ComponentA = () => {
     const [filter, setFilter] = useState('');
 
     const [contactsLength] = useContacts((contacts) => contacts.size, []);
+
     const [filteredContacts] = useContacts(
       (contacts) => {
         return [...contacts.values()].filter((contact) =>
@@ -178,7 +102,10 @@ const objectStateExample = (() => {
     return (
       <Container
         className="grid grid-cols-[auto,1fr] gap-2 gap-x-6 auto-rows-min items-start"
-        style={{ gridColumnStart: 'auto 1fr', minHeight: `${contactsLength * 3.2}rem` }}
+        style={{
+          gridColumnStart: 'auto 1fr',
+          minHeight: `${contactsLength * 3.2}rem`,
+        }}
       >
         <div className="col-span-2">
           <input
@@ -220,8 +147,8 @@ const objectStateExample = (() => {
           <br />
           <pre className="text-xs text-emphasis-primary">{`  // You can use selectors to get only what you need`}</pre>
           <pre className="text-xs text-emphasis-interactive">{`  const [filteredContacts] = useContacts(`}</pre>
-          <pre className="text-xs">{`    (contacts) => {`}</pre>
-          <pre className="text-xs">{`      return [...contacts.values()].filter((contact) => {`}</pre>
+          <pre className="text-xs">{`    (state) => {`}</pre>
+          <pre className="text-xs">{`      return [...state.contacts.values()].filter((contact) => {`}</pre>
           <pre className="text-xs">{`        const filter = filter.toLowerCase();`}</pre>
           <pre className="text-xs">{`        const name = contact.name.toLowerCase();`}</pre>
           <br />
@@ -242,16 +169,27 @@ const objectStateExample = (() => {
         </ul>
 
         <label className="text-xs">
-          Optionally, you can also configure the isEqualRoot if you need specific comparison logic.
+          Optionally, you can also configure the <strong>isEqualRoot</strong> or <strong>isEqual</strong> if
+          you need specific comparison logic.
         </label>
         <CodeBlock>
-          <pre className="text-xs">{`const useContacts = createGlobalState(getContactsMock(), {`}</pre>
-          <pre className="text-xs">{`  ...`}</pre>
-          <pre className="text-xs">{`},`}</pre>
-          <pre className="text-xs">{`{`}</pre>
-          <pre className="text-xs text-emphasis-interactive">{`  isEqualRoot: (a, b) => a.size === b.size,`}</pre>
-          <pre className="text-xs">{`  dependencies: [filter],`}</pre>
-          <pre className="text-xs">{`});`}</pre>
+          <pre className="text-xs">{`const useContacts = createGlobalState({ contacts: getContactsMock(), ... });`}</pre>
+          ...
+          <br />
+          <br />
+          <pre className="text-xs text-emphasis-interactive">{`const [filteredContacts] = useContacts(`}</pre>
+          <pre className="text-xs">{`  (state) => {`}</pre>
+          <pre className="text-xs">{`    return [...state.contacts.values()].filter((contact) => {`}</pre>
+          <pre className="text-xs">{`      return contact.name.toLowerCase().includes(filter);`}</pre>
+          <pre className="text-xs">{`    });`}</pre>
+          <pre className="text-xs">{`  },`}</pre>
+          <pre className="text-xs">{`  {`}</pre>
+          <pre className="text-xs text-emphasis-primary">{`    // This prevents re-computing the selector if contacts didn't change`}</pre>
+          <pre className="text-xs text-emphasis-primary">{`    // The selector still will be re-computed if the dependencies change`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`    isEqualRoot: (a, b) => a.contacts === b.contacts,`}</pre>
+          <pre className="text-xs">{`    dependencies: [filter],`}</pre>
+          <pre className="text-xs">{`  }`}</pre>
+          <pre className="text-xs">{`);`}</pre>
         </CodeBlock>
       </Container>
     </>
@@ -273,7 +211,7 @@ const reusingSelectorsExample = (() => {
   });
 
   const ComponentA = () => {
-    const [contacts] = useContactsWithJ();
+    const contacts = useContactsWithJ();
 
     return (
       <Container
@@ -294,17 +232,19 @@ const reusingSelectorsExample = (() => {
   return (
     <>
       <Container className="flex flex-col gap-4">
-        <SubTitle section="create-reusable-selected-states">Create reusable selected states</SubTitle>
+        <SubTitle section="create-reusable-selected-states">Create reusable selector</SubTitle>
 
         <CodeBlock>
-          <pre className="text-xs text-emphasis-interactive">{`const useContactsArray = useContacts.createSelectorHook((contacts) => {`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`const useContactsArray = useContacts.createSelectorHook(({ contacts, ... }) => {`}</pre>
           <pre className="text-xs">{`  return [...contacts.values()];`}</pre>
-          <pre className="text-xs">{`});`}</pre>
+          <pre className="text-xs">{`}, {
+  isEqual: (a, b) => a.contacts === b.contacts,
+});`}</pre>
           <br />
           <pre className="text-xs text-emphasis-primary">{`// You can create a selector from another selector`}</pre>
           <pre className="text-xs text-emphasis-interactive">{`const useContactsWithJ = useContactsArray.createSelectorHook((contacts) => {`}</pre>
-          <pre className="text-xs">{`  return contacts.filter((contact) => {`}</pre>
-          <pre className="text-xs">{`    const name = contact.name.toLowerCase();`}</pre>
+          <pre className="text-xs">{`  return contacts.filter((contactsArray) => {`}</pre>
+          <pre className="text-xs">{`    const name = contactsArray.name.toLowerCase();`}</pre>
           <pre className="text-xs">{`    return name.startsWith('j');`}</pre>
           <pre className="text-xs">{`  });`}</pre>
           <pre className="text-xs">{`});`}</pre>
@@ -316,38 +256,58 @@ const reusingSelectorsExample = (() => {
       <Container className="flex flex-col gap-4">
         <SubTitle>Contacts whose names start with 'J'</SubTitle>
         <ComponentA />
+
+        <CodeBlock>
+          <pre className="text-xs">{`const ComponentA = () => {`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  const contacts = useContactsWithJ();`}</pre>
+          <br />
+          <pre className="text-xs">{`  ...contacts.map(...`}</pre>
+          <pre className="text-xs">{`};`}</pre>
+        </CodeBlock>
       </Container>
     </>
   );
 })();
 
 const listeningToStateChanges = (() => {
-  const useProgress = createGlobalState(25);
-  const [progressRetriever, progressMutator] = useProgress.stateControls();
+  const progress$ = createGlobalState({ progress: 25, isRunning: false });
+
+  const useProgress = progress$.createSelectorHook((state) => state.progress);
 
   const ComponentA = () => {
-    const [isPaused, setIsPaused] = useState(true);
+    const isRunning = progress$.use.select((state) => state.isRunning);
+
+    console.log('listeningToStateChanges ComponentA rendered', { isRunning });
 
     useEffect(() => {
-      if (isPaused) return;
+      if (!isRunning) return;
 
       const interval = setInterval(() => {
-        progressMutator((prev) => (prev + 1) % 101);
-      }, 100);
+        progress$.setState((prev) => ({
+          ...prev,
+          progress: (prev.progress + 1) % 101,
+        }));
+      }, 50);
 
       return () => clearInterval(interval);
-    }, [isPaused]);
+    }, [isRunning]);
 
     return (
       <Container
         className="flex justify-between items-center flex-wrap"
         style={{ gridColumnStart: 'auto 1fr' }}
       >
-        <p>You can listen to the state changes outside hooks</p>
-        <Button onClick={() => setIsPaused((prev) => !prev)}>{isPaused ? 'Resume' : 'Pause'}</Button>
+        <ProgressLabel />
+        <Button onClick={() => progress$.setState((prev) => ({ ...prev, isRunning: !prev.isRunning }))}>
+          {isRunning ? 'Pause' : 'Resume'}
+        </Button>
       </Container>
     );
   };
+
+  function ProgressLabel() {
+    return <label>Progress: {useProgress()}%</label>;
+  }
 
   const ComponentB = () => {
     const ref = useRef<HTMLProgressElement>(null);
@@ -356,7 +316,7 @@ const listeningToStateChanges = (() => {
       const progressElement = ref.current!;
 
       // returns a function to unsubscribe
-      return progressRetriever((progress) => {
+      return progress$.subscribe(({ progress }) => {
         progressElement.value = progress;
       });
     }, []);
@@ -369,7 +329,6 @@ const listeningToStateChanges = (() => {
           ref={ref}
           value={0}
           max={100}
-          style={{ viewTransitionName: 'progress' }}
           className={merge(
             'col-span-2 w-full h-4 appearance-none border-emphasis-primary border rounded-md overflow-hidden',
             'bg-white [&::-webkit-progress-bar]:bg-white',
@@ -378,13 +337,15 @@ const listeningToStateChanges = (() => {
         />
 
         <CodeBlock className="col-span-2">
+          <pre className="text-xs text-emphasis-primary">{`// This component gets the state through subscription instead of a hook`}</pre>
           <pre className="text-xs">{`const ref = useRef<HTMLProgressElement>(null);`}</pre>
           <br />
           <pre className="text-xs">{`useEffect(() => {`}</pre>
           <pre className="text-xs">{`  const progressElement = ref.current!;`}</pre>
           <br />
           <pre className="text-xs text-emphasis-primary">{`  // returns a function to unsubscribe`}</pre>
-          <pre className="text-xs text-emphasis-interactive">{`  return progressRetriever((progress) => {`}</pre>
+          <pre className="text-xs text-emphasis-primary">{`  // listen only the progress value changes`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  return progress$.subscribe(({ progress }) => progress, (progress) => {`}</pre>
           <pre className="text-xs">{`    progressElement.value = progress;`}</pre>
           <pre className="text-xs">{`  });`}</pre>
           <pre className="text-xs">{`}, []);`}</pre>
@@ -392,13 +353,17 @@ const listeningToStateChanges = (() => {
           <pre className="text-xs">{`return <progress ref={ref} value={0} max={100} />;`}</pre>
         </CodeBlock>
 
+        <SubTitle className="col-span-2" section="retrieve-state-value-without-subscribing">
+          Retrieve state value without subscribing
+        </SubTitle>
+
         <label className="text-xs col-span-2">
           You can also simple retrieve the state value without subscribing to changes
         </label>
 
         <CodeBlock className="col-span-2">
-          <pre className="text-xs text-emphasis-interactive">{`console.log(progressRetriever()); // 0`}</pre>
-          <pre className="text-xs text-emphasis-primary">{`// synchronously returns the current value of the state`}</pre>
+          <pre className="text-xs text-emphasis-primary">{`// synchronously returns the current value of the state (no re-render needed)`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`console.log('Current progress:', progress$.getState().progress);`}</pre>
         </CodeBlock>
       </Container>
     );
@@ -408,29 +373,38 @@ const listeningToStateChanges = (() => {
     <>
       <Container className="flex flex-col gap-4">
         <SubTitle section="retrieve-hook-controls-outside-of-components">
-          Retrieve hook controls outside of components
+          Control state without hooks
         </SubTitle>
 
         <CodeBlock>
-          <pre className="text-xs">{`const useProgress = createGlobalState(0);`}</pre>
+          <pre className="text-xs text-emphasis-primary">{`// Let's use more store like syntax for this example`}</pre>
+          <pre className="text-xs">{`const progress$ = createGlobalState({ progress: 0, isRunning: false });`}</pre>
           <br />
-          <pre className="text-xs text-emphasis-primary">{`// You can retrieve the state controls outside of the components or hooks`}</pre>
-          <pre className="text-xs text-emphasis-interactive">{`const [progressRetriever, progressMutator] = useProgress.stateControls();`}</pre>
+          <pre className="text-xs">{`const useProgress = progress$.createSelectorHook((state) => state.progress);`}</pre>
           <br />
           <pre className="text-xs">{`const ComponentA = () => {`}</pre>
-          <pre className="text-xs text-emphasis-interactive">{`  const [isPaused, setIsPaused] = useState(true);`}</pre>
+          <pre className="text-xs text-emphasis-primary">{`  // We support this sugar for better semantic and readability`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  const isRunning = progress$.use.select((state) => state.isRunning);`}</pre>
           <br />
           <pre className="text-xs">{`  useEffect(() => {`}</pre>
-          <pre className="text-xs">{`    if (isPaused) return;`}</pre>
+          <pre className="text-xs">{`    if (!isRunning) return;`}</pre>
           <br />
           <pre className="text-xs">{`    const interval = setInterval(() => {`}</pre>
-          <pre className="text-xs text-emphasis-interactive">{`      progressMutator((prev) => (prev + 1) % 101);`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`      progress$.setState((prev) => ({`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`        ...prev,`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`        progress: (prev.progress + 1) % 101`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`      }));`}</pre>
           <pre className="text-xs">{`    }, 1000);`}</pre>
           <br />
           <pre className="text-xs">{`    return () => clearInterval(interval);`}</pre>
-          <pre className="text-xs">{`  }, [isPaused]);`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  }, [isRunning]);`}</pre>
           <br />
           <pre className="text-xs">{`...`}</pre>
+          <pre className="text-xs">{`};`}</pre>
+          <br />
+          <pre className="text-xs text-emphasis-primary">{`// will re-render when the progress changes`}</pre>
+          <pre className="text-xs">{`const ProgressLabel = () => {`}</pre>
+          <pre className="text-xs text-emphasis-interactive">{`  return <label>Progress: {useProgress()}%</label>;`}</pre>
           <pre className="text-xs">{`};`}</pre>
         </CodeBlock>
 
@@ -439,7 +413,7 @@ const listeningToStateChanges = (() => {
 
       <Container className="flex flex-col gap-4">
         <SubTitle section="subscribe-to-state-changes-without-a-hooks">
-          Subscribe to state changes without a hooks
+          Subscribe to state changes without hooks
         </SubTitle>
         <ComponentB />
       </Container>
@@ -448,17 +422,16 @@ const listeningToStateChanges = (() => {
 })();
 
 const moreListeningToStateChanges = (() => {
-  const useContacts = createGlobalState(getContactsMock());
-  const [contactsRetriever, setContacts] = useContacts.stateControls();
+  const contacts$ = createGlobalState(getContactsMock());
 
-  const useContactsArray = useContacts.createSelectorHook((contacts) => {
+  const useContactsArray = contacts$.createSelectorHook((contacts) => {
     return [...contacts.values()];
   });
 
   const useSelectedContactId = createGlobalState(null as string | null, {
     callbacks: {
       onInit: ({ setState, getState }) => {
-        contactsRetriever((contacts) => {
+        contacts$.subscribe((contacts) => {
           if (contacts.has(getState()!)) return;
 
           setState(null);
@@ -468,7 +441,7 @@ const moreListeningToStateChanges = (() => {
   });
 
   const ComponentA = () => {
-    const [contacts] = useContactsArray();
+    const contacts = useContactsArray();
     const [selectedContactId, setSelectedContactId] = useSelectedContactId();
 
     return (
@@ -513,7 +486,7 @@ const moreListeningToStateChanges = (() => {
           onClick={() => {
             if (!selectedContactId) return;
 
-            setContacts((contacts) => {
+            contacts$.setState((contacts) => {
               contacts.delete(selectedContactId);
               return new Map(contacts);
             });
@@ -524,7 +497,7 @@ const moreListeningToStateChanges = (() => {
 
         <Button
           onClick={() => {
-            setContacts(getContactsMock());
+            contacts$.setState(getContactsMock());
           }}
         >
           Reset Example
@@ -554,9 +527,7 @@ const moreListeningToStateChanges = (() => {
       <CodeBlock className="col-span-2">
         <pre className="text-xs">{`const useContacts = createGlobalState(getContactsMock());`}</pre>
         <br />
-        <pre className="text-xs text-emphasis-primary">{`// the retriever do both, get the state or subscribe to changes`}</pre>
-        <pre className="text-xs text-emphasis-interactive">{`const [contactsRetriever, setContacts] = useContacts.stateControls();`}</pre>
-        <br />
+
         <pre className="text-xs">{`const useContactsArray = useContacts.createSelectorHook((contacts) => {`}</pre>
         <pre className="text-xs">{`  return [...contacts.values()];`}</pre>
         <pre className="text-xs">{`});`}</pre>
@@ -565,14 +536,15 @@ const moreListeningToStateChanges = (() => {
       <label className="col-span-2 font-bold">useSelectedContact</label>
 
       <CodeBlock className="col-span-2">
-        <pre className="text-xs text-emphasis-primary">{`// The second argument is a configuration object, we'll analyze it from now on`}</pre>
-        <pre className="text-xs">{`const useSelectedContactId = createGlobalState(null as string | null, {`}</pre>
+        <pre className="text-xs">{`const initialValue: string | null = null`}</pre>
         <br />
-        <pre className="text-xs text-emphasis-primary">{`// Callbacks are the lifecycle events of the state`}</pre>
+        <pre className="text-xs text-emphasis-primary">{`// The second argument is a configuration object, we'll analyze it from now on`}</pre>
+        <pre className="text-xs">{`const useSelectedContactId = createGlobalState(initialValue, {`}</pre>
+        <pre className="text-xs text-emphasis-primary">{`  // lifecycle events of the state`}</pre>
         <pre className="text-xs text-emphasis-interactive">{`  callbacks: {`}</pre>
         <pre className="text-xs text-emphasis-interactive">{`    onInit: ({ setState, getState }) => {`}</pre>
         <pre className="text-xs text-emphasis-primary font-semibold">{`      // If the contacts map stops containing the selected one, reset`}</pre>
-        <pre className="text-xs text-emphasis-interactive">{`      contactsRetriever((contacts) => {`}</pre>
+        <pre className="text-xs text-emphasis-interactive">{`      contacts$.subscribe((contacts) => {`}</pre>
         <pre className="text-xs">{`        if (contacts.has(getState()!)) return;`}</pre>
         <br />
         <pre className="text-xs">{`        setState(null);`}</pre>
@@ -581,6 +553,8 @@ const moreListeningToStateChanges = (() => {
         <pre className="text-xs">{`  },`}</pre>
         <pre className="text-xs">{`});`}</pre>
       </CodeBlock>
+
+      <p className="col-span-2">All the logic related to the state is contained into the hook declaration</p>
     </Container>
   );
 })();
@@ -589,6 +563,9 @@ const persistStateExample = (() => {
   const useCounter = createGlobalState(0, {
     localStorage: {
       key: '_counter_from_react_hooks_global_states_example',
+      validator: ({ restored }) => {
+        if (typeof restored !== 'number') throw new Error('Invalid value, expected a number');
+      },
     },
   });
 
@@ -598,8 +575,8 @@ const persistStateExample = (() => {
       increment: (value = 1) => {
         // the return of the second function is the action itself
         // and defines the return type of the action
-        return ({ setState, getState }): number => {
-          setState((prev) => prev + value || 1);
+        return ({ setState, getState }) => {
+          setState((prev) => prev + value);
 
           return getState();
         };
@@ -607,7 +584,7 @@ const persistStateExample = (() => {
 
       decrement: (value = 1) => {
         return ({ setState }) => {
-          setState((prev) => prev - value || 1);
+          setState((prev) => prev - value);
         };
       },
     },
@@ -630,8 +607,8 @@ const persistStateExample = (() => {
 
     return (
       <Container className="flex gap-4 items-center flex-wrap" style={{ gridColumnStart: 'auto 1fr' }}>
-        <Button onClick={() => increment(count)}>Increment</Button>
-        <Button onClick={() => decrement(count)}>Decrement</Button>
+        <Button onClick={() => increment(2)}>Increment</Button>
+        <Button onClick={() => decrement(2)}>Decrement</Button>
         <label className="flex-1 text-right">{count}</label>
       </Container>
     );
@@ -659,9 +636,28 @@ const persistStateExample = (() => {
         <pre className="text-xs">{`const useCounter = createGlobalState(0, {`}</pre>
         <pre className="text-xs">{`  localStorage: {`}</pre>
         <pre className="text-xs text-emphasis-interactive">{`    key: '_counter_from_react_hooks_global_states_example',`}</pre>
+        <pre className="text-xs">{`    validator: ({ restored }) => {`}</pre>
+        <pre className="text-xs">{`      if (typeof restored !== 'number') throw new Error('Invalid value, expected a number');`}</pre>
+        <pre className="text-xs">{`    },`}</pre>
         <pre className="text-xs">{`  },`}</pre>
         <pre className="text-xs">{`});`}</pre>
       </CodeBlock>
+      <ul className="pl-8 text-s">
+        <li className="list-disc">
+          The validator function is required to ensure the integrity of the data being restored from
+          localStorage.
+        </li>
+        <li className="list-disc">
+          If the validator throws an error, the state will be reset to the initial value.
+        </li>
+        <li className="list-disc">If the validator returns a value it will override the restored one.</li>
+        <li className="list-disc">
+          The validator function receives <strong>{`{ restored, initial }`}</strong> as argument.
+        </li>
+        <li className="list-disc">
+          The validator function could be empty <strong>{`validator: () => {}`}</strong>
+        </li>
+      </ul>
 
       <SubTitle section="custom-actions">Custom actions</SubTitle>
       <p>You can also restrict the manipulation of the state to and specific set of actions.</p>
@@ -669,25 +665,26 @@ const persistStateExample = (() => {
       <CodeBlock className="col-span-2">
         <pre className="text-xs">{`const useCounterWithActions = createGlobalState(0, {`}</pre>
         <pre className="text-xs text-emphasis-interactive">{`  actions: {`}</pre>
-        <pre className="text-xs text-emphasis-primary">{`    // the first function defines the action name and arguments`}</pre>
         <pre className="text-xs  text-emphasis-interactive">{`    increment: (value = 1) => {`}</pre>
-        <pre className="text-xs text-emphasis-primary">{`      // the return of the second function is the action itself`}</pre>
-        <pre className="text-xs text-emphasis-primary">{`      // and defines the return type of the action`}</pre>
-        <pre className="text-xs  text-emphasis-interactive">{`      return ({ setState, getState }): number => {`}</pre>
-        <pre className="text-xs">{`        setState((prev) => prev + value || 1);`}</pre>
+        <pre className="text-xs  text-emphasis-interactive">{`      return ({ setState, getState }) => {`}</pre>
+        <pre className="text-xs">{`        setState((prev) => prev + value);`}</pre>
         <br />
         <pre className="text-xs">{`        return getState();`}</pre>
         <pre className="text-xs">{`      };`}</pre>
         <pre className="text-xs">{`    },`}</pre>
+        <br />
         <pre className="text-xs text-emphasis-interactive">{`    decrement: (value = 1) => {`}</pre>
         <pre className="text-xs text-emphasis-interactive">{`      return ({ setState }) => {`}</pre>
-        <pre className="text-xs">{`        setState((prev) => prev - value || 1);`}</pre>
+        <pre className="text-xs">{`        setState((prev) => prev - value);`}</pre>
         <br />
         <pre className="text-xs">{`        return getState();`}</pre>
         <pre className="text-xs">{`      };`}</pre>
         <pre className="text-xs">{`    },`}</pre>
         <pre className="text-xs">{`  },`}</pre>
         <pre className="text-xs">{`});`}</pre>
+        <br />
+        <pre className="text-xs text-emphasis-primary">{`// You can also use store like syntax`}</pre>
+        <pre className="text-xs">{`const counter$ = createGlobalState(0, {...});`}</pre>
       </CodeBlock>
 
       <label className="font-semibold">How to use the actions</label>
@@ -699,12 +696,24 @@ const persistStateExample = (() => {
         <pre className="text-xs text-emphasis-primary">{`// Increase the count by himself each time: 1, 2, 4, 8, 16, ...`}</pre>
         <pre className="text-xs">
           {`<Button onClick={`}
-          <span className="text-emphasis-interactive">{'() => increment(count)'}</span>
+          <span className="text-emphasis-interactive">{'() => increment(2)'}</span>
           {`}>Increment</Button>`}
         </pre>
         <pre className="text-xs">
           {`<Button onClick={`}
-          <span className="text-emphasis-interactive">{'() => decrement(count)'}</span>
+          <span className="text-emphasis-interactive">{'() => decrement(2)'}</span>
+          {`}>Decrement</Button>`}
+        </pre>
+        <br />
+        <pre className="text-xs text-emphasis-primary">{`// Or with store like syntax`}</pre>
+        <pre className="text-xs">
+          {`<Button onClick={`}
+          <span className="text-emphasis-interactive">{'() => counter$.actions.increment(2)'}</span>
+          {`}>Increment</Button>`}
+        </pre>
+        <pre className="text-xs">
+          {`<Button onClick={`}
+          <span className="text-emphasis-interactive">{'() => counter$.actions.decrement(2)'}</span>
           {`}>Decrement</Button>`}
         </pre>
       </CodeBlock>
@@ -717,7 +726,7 @@ const menuTransitionStyle = {
   viewTransitionName: 'floating-menu',
 } as React.CSSProperties;
 
-const [useMenu, MenuProvider] = createContext(
+const menu$ = createContext(
   {
     isOpen: false,
   },
@@ -739,7 +748,7 @@ const [useMenu, MenuProvider] = createContext(
 
 const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = () => {
   const [, transition] = useTransition();
-  const [, { openMenu }] = useMenu();
+  const [, { openMenu }] = menu$.use();
 
   return (
     <button
@@ -765,7 +774,7 @@ const MenuButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = () =
 
 const FloatingMenuContainer: React.FC = () => {
   const [, transition] = useTransition();
-  const [{ isOpen: isMenuOpen }, { closeMenu }] = useMenu();
+  const [{ isOpen: isMenuOpen }, { closeMenu }] = menu$.use();
 
   useClickOutSide(() => {
     transition(() => {
@@ -834,9 +843,9 @@ export const GlobalHooksExample = () => {
   return (
     <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 pb-96 md:px-20')}>
       <MenuPortal>
-        <MenuProvider>
+        <menu$.Provider>
           <FloatingMenuContainer />
-        </MenuProvider>
+        </menu$.Provider>
       </MenuPortal>
 
       <Title>Welcome to react-hooks-global-state</Title>
@@ -878,14 +887,34 @@ function getContactsMock() {
   return new Map<string, Contact>(
     [
       { id: uniqueId('c:'), name: 'John Doe', email: 'johndoe@example.com' },
-      { id: uniqueId('c:'), name: 'Jane Smith', email: 'janesmith@example.com' },
-      { id: uniqueId('c:'), name: 'Alice Johnson', email: 'alicej@example.com' },
+      {
+        id: uniqueId('c:'),
+        name: 'Jane Smith',
+        email: 'janesmith@example.com',
+      },
+      {
+        id: uniqueId('c:'),
+        name: 'Alice Johnson',
+        email: 'alicej@example.com',
+      },
       { id: uniqueId('c:'), name: 'Bob Brown', email: 'bobbrown@example.com' },
-      { id: uniqueId('c:'), name: 'Charlie Davis', email: 'charlied@example.com' },
-      { id: uniqueId('c:'), name: 'Diana Evans', email: 'dianaevans@example.com' },
+      {
+        id: uniqueId('c:'),
+        name: 'Charlie Davis',
+        email: 'charlied@example.com',
+      },
+      {
+        id: uniqueId('c:'),
+        name: 'Diana Evans',
+        email: 'dianaevans@example.com',
+      },
       { id: uniqueId('c:'), name: 'Ethan Wright', email: 'ethanw@example.com' },
       { id: uniqueId('c:'), name: 'Fiona Green', email: 'fionag@example.com' },
-      { id: uniqueId('c:'), name: 'George Harris', email: 'georgeh@example.com' },
+      {
+        id: uniqueId('c:'),
+        name: 'George Harris',
+        email: 'georgeh@example.com',
+      },
       { id: uniqueId('c:'), name: 'Hannah Lee', email: 'hannahlee@example.com' },
     ].map((contact) => [contact.id, contact])
   );
@@ -917,3 +946,74 @@ const useClickOutSide = (
     return () => root.removeEventListener('click', clickOutsideHandler);
   }, [isEnable, element, ...dependencies]);
 };
+
+function Title({ className = '', children }: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) {
+  return <h1 className={merge(className, 'text-2xl font-bold text-text-title')}>{children}</h1>;
+}
+
+function SubTitle({
+  className = '',
+  section,
+  children,
+}: React.PropsWithChildren<
+  React.HTMLAttributes<HTMLElement> & {
+    section?: string;
+  }
+>) {
+  return (
+    <h2
+      id={section ?? uniqueId('section:')}
+      className={merge(className, 'text-xl font-semibold text-text-subtitle')}
+    >
+      {children}
+    </h2>
+  );
+}
+
+function Container({
+  className = '',
+  children,
+  ...props
+}: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) {
+  return (
+    <div
+      className={merge(
+        className,
+        ' overflow-hidden bg-background-primary rounded-md p-6 border-emphasis-primary border'
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Button({ className = '', children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      className={merge(
+        className,
+        'bg-emphasis-primary text-background-primary px-4 py-2 rounded-md',
+        'hover:bg-emphasis-secondary transition-colors duration-300'
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+function CodeBlock({ className = '', children }: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) {
+  return (
+    <code
+      className={merge(
+        className,
+        styles.code,
+        'bg-white p-6 rounded-md border-emphasis-secondary border',
+        ' flex-wrap'
+      )}
+    >
+      {children}
+    </code>
+  );
+}
