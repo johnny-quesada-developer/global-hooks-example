@@ -1,4 +1,7 @@
-export const Score: React.FC<{ useScore: () => number }> = ({ useScore }) => {
+import snakeGame from '../stores/snakeGame';
+
+const Score: React.FC = () => {
+  const { useScore } = snakeGame.use.actions();
   const score = useScore();
 
   return (
@@ -8,3 +11,5 @@ export const Score: React.FC<{ useScore: () => number }> = ({ useScore }) => {
     </div>
   );
 };
+
+export default Score;

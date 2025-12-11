@@ -1,27 +1,40 @@
 import React from 'react';
-import type { BaseMetadata, StateHook, StateSetter } from 'react-global-state-hooks/types';
-import { type SnakeHtmlProps } from '../hooks/makeUseSnakeHtmlProps';
-import { useGameState } from '../hooks/useGameState';
-import { Score } from '../components/Score';
-import { useRunGame } from '../hooks/useRunGame';
-import Matrix from '../components/Matrix';
+import Score from '../components/Score';
+import snakeGame from '../stores/snakeGame';
+import { Cell } from './Cell';
+import useMatrixSize from '../stores/snakeGame/hooks/useMatrixSize';
 
-type GameProps = {
-  useSnakeHtmlProps: StateHook<SnakeHtmlProps, StateSetter<SnakeHtmlProps>, BaseMetadata>;
-};
+export const SnakeGame: React.FC = () => {
+  const { useRunGame } = snakeGame.use.actions();
 
-export const Game: React.FC<GameProps> = ({ useSnakeHtmlProps }) => {
-  const [htmlProps] = useSnakeHtmlProps();
-  const gameState = useGameState(htmlProps);
+  const matrixSize = useMatrixSize();
 
-  useRunGame(gameState, htmlProps);
+  useRunGame();
 
   return (
     <>
-      <Score key={Date.now()} useScore={gameState.game.useScore} />
-      <div className="grid w-fit" style={{ gridTemplateColumns: `repeat(${htmlProps.matrix}, 1fr)` }}>
-        <Matrix game={gameState} snakeHtmlProps={htmlProps} />
+      <Score key={new Date().toString()} />
+
+      <div
+        className="grid w-fit"
+        style={{ gridTemplateColumns: `repeat(${matrixSize}, 1fr)` }}
+      >
+        {buildCells(matrixSize)}
       </div>
     </>
   );
 };
+
+function buildCells(matrixSize: number) {
+  const cells: JSX.Element[] = [];
+
+  // renders the flat matrix as a grid
+  for (let rowIndex = 0; rowIndex < matrixSize; rowIndex++) {
+    for (let columnIndex = 0; columnIndex < matrixSize; columnIndex++) {
+      const point = { x: columnIndex, y: rowIndex };
+
+      cells.push(<Cell key={`${rowIndex}-${columnIndex}`} point={point} />);
+    }
+  }
+  return cells;
+}

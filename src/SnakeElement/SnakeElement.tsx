@@ -1,78 +1,170 @@
 import { createRoot } from 'react-dom/client';
-import type { StateHook, StateSetter, BaseMetadata } from 'react-global-state-hooks';
-import { Game } from './components/Game';
-import { makeUseSnakeHtmlProps, SnakeHtmlProps } from './hooks/makeUseSnakeHtmlProps';
+import { SnakeGame } from './components/Game';
+import { initialValue, SnakeContext } from './stores/snakeGame';
+import { createDecoupledPromise } from 'easy-cancelable-promise';
+import { isNil } from 'json-storage-formatter';
+import debounce from './helpers/debounce';
+import snakeGame from './stores/snakeGame';
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'snake-game': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+      'snake-game': React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
         matrix?: number;
         apples?: number;
-        'interval-speed'?: number;
-        'show-renders'?: number;
+        speed?: number;
+        renders?: number;
       };
     }
   }
 }
 
+type StateKey = keyof typeof initialValue;
+
+type AttrType = 'number' | 'boolean';
+
+type Attr = {
+  name: StateKey;
+  value: unknown;
+  defaultValue: unknown;
+  type: AttrType;
+};
+
 export class SnakeElement extends HTMLElement {
   public static selector = 'snake-game';
 
-  private static _propsMap: Map<string, string> = new Map([
-    ['matrix', 'matrix'],
-    ['apples', 'apples'],
-    ['interval-speed', 'intervalSpeed'],
-    ['show-renders', 'showRenders'],
+  public static htmlAttrsMap: Map<string, Attr> = new Map([
+    [
+      'matrix',
+      {
+        name: 'matrixSize',
+        value: 10,
+        defaultValue: 10,
+        type: 'number',
+      },
+    ],
+    [
+      'apples',
+      {
+        name: 'applesCount',
+        value: 5,
+        defaultValue: 5,
+        type: 'number',
+      },
+    ],
+    [
+      'speed',
+      {
+        name: 'speedInterval',
+        value: 200,
+        defaultValue: 200,
+        type: 'number',
+      },
+    ],
+    [
+      'renders',
+      {
+        name: 'showRenders',
+        value: false,
+        defaultValue: false,
+        type: 'boolean',
+      },
+    ],
   ]);
 
   /**
    * Observe the attributes you care about updating
    */
   static get observedAttributes() {
-    return Array.from(SnakeElement._propsMap.keys());
+    return Array.from(SnakeElement.htmlAttrsMap.keys());
   }
+
+  public snakeGame: SnakeContext | null = null;
+
+  private state = initialValue;
 
   constructor() {
     super();
-
-    this.useSnakeHtmlProps = makeUseSnakeHtmlProps();
   }
 
-  private useSnakeHtmlProps: StateHook<SnakeHtmlProps, StateSetter<SnakeHtmlProps>, BaseMetadata>;
+  async connectedCallback() {
+    const defer = createDecoupledPromise<SnakeContext>();
 
-  connectedCallback() {
-    createRoot(this).render(<Game useSnakeHtmlProps={this.useSnakeHtmlProps} />);
+    this.state = this.readParameters();
+
+    createRoot(this).render(
+      <snakeGame.Provider
+        value={this.state as typeof initialValue}
+        onCreated={(context) => {
+          defer.resolve(context);
+        }}
+      >
+        <SnakeGame />
+      </snakeGame.Provider>
+    );
+
+    const game = await defer.promise;
+
+    // captures the context api
+    this.snakeGame = game;
+
+    this.startGameDebounce();
+  }
+
+  startGameDebounce = debounce(() => {
+    this.snakeGame?.actions.createMatrix(this.state);
+  }, 10);
+
+  readAttribute(htmlAttr: string): { name: string; value: unknown } | undefined {
+    const { name, ...item } = SnakeElement.htmlAttrsMap.get(htmlAttr)!;
+    let value: unknown = this.getAttribute(htmlAttr);
+
+    if (isNil(value)) return;
+
+    switch (item.type) {
+      case 'boolean':
+        value = !(value === 'false');
+        break;
+      default:
+        value = Number(value);
+        value = isNaN(value as number) ? item.defaultValue : value;
+    }
+
+    return { name, value };
+  }
+
+  readParameters() {
+    return [...SnakeElement.htmlAttrsMap.entries()].reduce(
+      (acc, [htmlAttr, item]) => {
+        const result = this.readAttribute(htmlAttr);
+
+        if (isNil(result)) return acc;
+
+        acc[item.name] = result.value as never;
+
+        return acc;
+      },
+      { ...this.state }
+    );
   }
 
   disconnectedCallback() {
-    this.useSnakeHtmlProps.dispose();
-
-    Object.assign(this, {
-      useSnakeHtmlProps: null,
-    });
+    this.snakeGame = null;
   }
 
   /**
    * Update the state of the component when attribute values change.
    */
-  attributeChangedCallback(name: string, _oldValue: string, newValueString: string) {
-    const isProp = SnakeElement._propsMap.has(name);
+  attributeChangedCallback(htmlAttr: string): { name: string; value: number } | void {
+    const isKnowProp = SnakeElement.htmlAttrsMap.has(htmlAttr);
+    if (!isKnowProp) return;
 
-    if (!isProp) return;
+    this.state = this.readParameters();
 
-    const [getProps, setProps] = this.useSnakeHtmlProps.stateControls();
-
-    const propName = SnakeElement._propsMap.get(name) as keyof SnakeHtmlProps;
-    const newValue = parseInt(newValueString ?? '0');
-    const currentValue = getProps()[propName];
-
-    if (newValueString === undefined || newValue === currentValue) return;
-
-    setProps((prevProps) => ({
-      ...prevProps,
-      [propName]: newValue,
-    }));
+    this.startGameDebounce();
   }
 }
 

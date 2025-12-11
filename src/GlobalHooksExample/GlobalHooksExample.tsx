@@ -4,8 +4,8 @@ import styles from './GlobalHooksExample.module.scss';
 import createGlobalState from 'react-global-state-hooks/createGlobalState';
 import { uniqueId } from 'react-global-state-hooks/uniqueId';
 import { createPortal } from 'react-dom';
-import { isFunction } from 'json-storage-formatter/isFunction';
-import { isNil } from 'json-storage-formatter/isNil';
+import isFunction from 'json-storage-formatter/isFunction';
+import isNil from 'json-storage-formatter/isNil';
 import { createContext } from 'react-global-state-hooks/createContext';
 
 //  * Start simple: use global state just like useState
@@ -165,12 +165,14 @@ const objectStateExample = (() => {
 
         <ul className="text-xs pl-4">
           <li className="list-disc">The selector will recompute if the state changes</li>
-          <li className="list-disc">The selector will also recompute if the dependencies change</li>
+          <li className="list-disc">
+            The selector will also recompute if the dependencies change
+          </li>
         </ul>
 
         <label className="text-xs">
-          Optionally, you can also configure the <strong>isEqualRoot</strong> or <strong>isEqual</strong> if
-          you need specific comparison logic.
+          Optionally, you can also configure the <strong>isEqualRoot</strong> or{' '}
+          <strong>isEqual</strong> if you need specific comparison logic.
         </label>
         <CodeBlock>
           <pre className="text-xs">{`const useContacts = createGlobalState({ contacts: getContactsMock(), ... });`}</pre>
@@ -232,7 +234,9 @@ const reusingSelectorsExample = (() => {
   return (
     <>
       <Container className="flex flex-col gap-4">
-        <SubTitle section="create-reusable-selected-states">Create reusable selector</SubTitle>
+        <SubTitle section="create-reusable-selected-states">
+          Create reusable selector
+        </SubTitle>
 
         <CodeBlock>
           <pre className="text-xs text-emphasis-interactive">{`const useContactsArray = useContacts.createSelectorHook(({ contacts, ... }) => {`}</pre>
@@ -250,7 +254,9 @@ const reusingSelectorsExample = (() => {
           <pre className="text-xs">{`});`}</pre>
         </CodeBlock>
 
-        <p className="text-xs">Each selector listens only to the state of the hook it was created from.</p>
+        <p className="text-xs">
+          Each selector listens only to the state of the hook it was created from.
+        </p>
       </Container>
 
       <Container className="flex flex-col gap-4">
@@ -274,6 +280,7 @@ const listeningToStateChanges = (() => {
 
   const useProgress = progress$.createSelectorHook((state) => state.progress);
 
+  // doesn't listen to changes, just retrieve the state value or subscribe to changes
   const ComponentA = () => {
     const isRunning = progress$.use.select((state) => state.isRunning);
 
@@ -298,7 +305,11 @@ const listeningToStateChanges = (() => {
         style={{ gridColumnStart: 'auto 1fr' }}
       >
         <ProgressLabel />
-        <Button onClick={() => progress$.setState((prev) => ({ ...prev, isRunning: !prev.isRunning }))}>
+        <Button
+          onClick={() =>
+            progress$.setState((prev) => ({ ...prev, isRunning: !prev.isRunning }))
+          }
+        >
           {isRunning ? 'Pause' : 'Resume'}
         </Button>
       </Container>
@@ -353,7 +364,10 @@ const listeningToStateChanges = (() => {
           <pre className="text-xs">{`return <progress ref={ref} value={0} max={100} />;`}</pre>
         </CodeBlock>
 
-        <SubTitle className="col-span-2" section="retrieve-state-value-without-subscribing">
+        <SubTitle
+          className="col-span-2"
+          section="retrieve-state-value-without-subscribing"
+        >
           Retrieve state value without subscribing
         </SubTitle>
 
@@ -428,7 +442,9 @@ const moreListeningToStateChanges = (() => {
     return [...contacts.values()];
   });
 
-  const useSelectedContactId = createGlobalState(null as string | null, {
+  const initialSelectedContactId = null as string | null;
+
+  const useSelectedContactId = createGlobalState(initialSelectedContactId, {
     callbacks: {
       onInit: ({ setState, getState }) => {
         contacts$.subscribe((contacts) => {
@@ -454,7 +470,8 @@ const moreListeningToStateChanges = (() => {
               {
                 'bg-emphasis-primary': index % 2 === 0,
                 'bg-emphasis-secondary': index % 2 !== 0,
-                '!bg-emphasis-primary !opacity-100 text-white': selectedContactId === contact.id,
+                '!bg-emphasis-primary !opacity-100 text-white':
+                  selectedContactId === contact.id,
               },
               'hover:bg-opacity-50 hover:text-white hover:bg-emphasis-primary'
             )}
@@ -477,7 +494,10 @@ const moreListeningToStateChanges = (() => {
     const [selectedContactId] = useSelectedContactId();
 
     return (
-      <Container className="flex gap-4 items-center flex-wrap" style={{ gridColumnStart: 'auto 1fr' }}>
+      <Container
+        className="flex gap-4 items-center flex-wrap"
+        style={{ gridColumnStart: 'auto 1fr' }}
+      >
         <label>
           <strong>Selected contact Id</strong>: {selectedContactId ?? 'None'}
         </label>
@@ -513,8 +533,8 @@ const moreListeningToStateChanges = (() => {
       </SubTitle>
 
       <label className="col-span-2">
-        Been able to listen to the state changes without a hook is very useful, let's say that you have and
-        state that depends on another one.
+        Been able to listen to the state changes without a hook is very useful, let's say
+        that you have and state that depends on another one.
       </label>
 
       <label className="font-semibold">Component A</label>
@@ -554,7 +574,9 @@ const moreListeningToStateChanges = (() => {
         <pre className="text-xs">{`});`}</pre>
       </CodeBlock>
 
-      <p className="col-span-2">All the logic related to the state is contained into the hook declaration</p>
+      <p className="col-span-2">
+        All the logic related to the state is contained into the hook declaration
+      </p>
     </Container>
   );
 })();
@@ -564,7 +586,8 @@ const persistStateExample = (() => {
     localStorage: {
       key: '_counter_from_react_hooks_global_states_example',
       validator: ({ restored }) => {
-        if (typeof restored !== 'number') throw new Error('Invalid value, expected a number');
+        if (typeof restored !== 'number')
+          throw new Error('Invalid value, expected a number');
       },
     },
   });
@@ -594,7 +617,10 @@ const persistStateExample = (() => {
     const [count, setCount] = useCounter();
 
     return (
-      <Container className="flex gap-4 items-center flex-wrap" style={{ gridColumnStart: 'auto 1fr' }}>
+      <Container
+        className="flex gap-4 items-center flex-wrap"
+        style={{ gridColumnStart: 'auto 1fr' }}
+      >
         <Button onClick={() => setCount((prev) => prev + 1)}>Increment</Button>
         <Button onClick={() => setCount((prev) => prev - 1)}>Decrement</Button>
         <label className="flex-1 text-right">{count}</label>
@@ -606,7 +632,10 @@ const persistStateExample = (() => {
     const [count, { increment, decrement }] = useCounterWithActions();
 
     return (
-      <Container className="flex gap-4 items-center flex-wrap" style={{ gridColumnStart: 'auto 1fr' }}>
+      <Container
+        className="flex gap-4 items-center flex-wrap"
+        style={{ gridColumnStart: 'auto 1fr' }}
+      >
         <Button onClick={() => increment(2)}>Increment</Button>
         <Button onClick={() => decrement(2)}>Decrement</Button>
         <label className="flex-1 text-right">{count}</label>
@@ -616,7 +645,9 @@ const persistStateExample = (() => {
 
   return (
     <Container className="flex flex-col gap-4">
-      <SubTitle section="persist-state-in-localstorage">Persist state in localStorage</SubTitle>
+      <SubTitle section="persist-state-in-localstorage">
+        Persist state in localStorage
+      </SubTitle>
 
       <p>
         If you are using{' '}
@@ -626,8 +657,8 @@ const persistStateExample = (() => {
         >
           react-global-state-hooks
         </a>
-        , which is the version of the library focused on browser usage, you can persist the state in the
-        localStorage.
+        , which is the version of the library focused on browser usage, you can persist
+        the state in the localStorage.
       </p>
 
       <ComponentA />
@@ -644,15 +675,18 @@ const persistStateExample = (() => {
       </CodeBlock>
       <ul className="pl-8 text-s">
         <li className="list-disc">
-          The validator function is required to ensure the integrity of the data being restored from
-          localStorage.
+          The validator function is required to ensure the integrity of the data being
+          restored from localStorage.
         </li>
         <li className="list-disc">
           If the validator throws an error, the state will be reset to the initial value.
         </li>
-        <li className="list-disc">If the validator returns a value it will override the restored one.</li>
         <li className="list-disc">
-          The validator function receives <strong>{`{ restored, initial }`}</strong> as argument.
+          If the validator returns a value it will override the restored one.
+        </li>
+        <li className="list-disc">
+          The validator function receives <strong>{`{ restored, initial }`}</strong> as
+          argument.
         </li>
         <li className="list-disc">
           The validator function could be empty <strong>{`validator: () => {}`}</strong>
@@ -660,7 +694,10 @@ const persistStateExample = (() => {
       </ul>
 
       <SubTitle section="custom-actions">Custom actions</SubTitle>
-      <p>You can also restrict the manipulation of the state to and specific set of actions.</p>
+      <p>
+        You can also restrict the manipulation of the state to and specific set of
+        actions.
+      </p>
 
       <CodeBlock className="col-span-2">
         <pre className="text-xs">{`const useCounterWithActions = createGlobalState(0, {`}</pre>
@@ -708,12 +745,16 @@ const persistStateExample = (() => {
         <pre className="text-xs text-emphasis-primary">{`// Or with store like syntax`}</pre>
         <pre className="text-xs">
           {`<Button onClick={`}
-          <span className="text-emphasis-interactive">{'() => counter$.actions.increment(2)'}</span>
+          <span className="text-emphasis-interactive">
+            {'() => counter$.actions.increment(2)'}
+          </span>
           {`}>Increment</Button>`}
         </pre>
         <pre className="text-xs">
           {`<Button onClick={`}
-          <span className="text-emphasis-interactive">{'() => counter$.actions.decrement(2)'}</span>
+          <span className="text-emphasis-interactive">
+            {'() => counter$.actions.decrement(2)'}
+          </span>
           {`}>Decrement</Button>`}
         </pre>
       </CodeBlock>
@@ -780,7 +821,12 @@ const FloatingMenuContainer: React.FC = () => {
     transition(() => {
       closeMenu();
     });
-  }, [isMenuOpen, () => document.getElementById('floating-menu')!, closeMenu, transition]);
+  }, [
+    isMenuOpen,
+    () => document.getElementById('floating-menu')!,
+    closeMenu,
+    transition,
+  ]);
 
   return (
     <div className="fixed top-2 left-2">
@@ -804,8 +850,14 @@ const FloatingMenuContainer: React.FC = () => {
             ['how-to-share-a-global-state', 'How to share a global state?'],
             ['select-only-what-you-need', 'Select only what you need'],
             ['create-reusable-selected-states', 'Create reusable selected states'],
-            ['retrieve-hook-controls-outside-of-components', 'Retrieve hook controls outside of components'],
-            ['subscribe-to-state-changes-without-a-hooks', 'Subscribe to state changes without a hooks'],
+            [
+              'retrieve-hook-controls-outside-of-components',
+              'Retrieve hook controls outside of components',
+            ],
+            [
+              'subscribe-to-state-changes-without-a-hooks',
+              'Subscribe to state changes without a hooks',
+            ],
             ['hooks-who-depend-other-hooks', 'Hooks who depend other hooks'],
             ['persist-state-in-localstorage', 'Persist state in localStorage'],
             ['custom-actions', 'Custom actions'],
@@ -817,7 +869,9 @@ const FloatingMenuContainer: React.FC = () => {
                   onClick={() => {
                     transition(() => {
                       closeMenu();
-                      document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+                      document
+                        .getElementById(section)
+                        ?.scrollIntoView({ behavior: 'smooth' });
                     });
                   }}
                   className="block text-sm text-emphasis-primary hover:text-emphasis-secondary"
@@ -841,7 +895,14 @@ const MenuPortal: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 export const GlobalHooksExample = () => {
   return (
-    <div className={merge(styles.bgDots, 'text-text-normal', 'flex flex-col gap-4', 'p-4 pb-96 md:px-20')}>
+    <div
+      className={merge(
+        styles.bgDots,
+        'text-text-normal',
+        'flex flex-col gap-4',
+        'p-4 pb-96 md:px-20'
+      )}
+    >
       <MenuPortal>
         <menu$.Provider>
           <FloatingMenuContainer />
@@ -857,21 +918,51 @@ export const GlobalHooksExample = () => {
           'align-middle place-content-start'
         )}
       >
-        <hr id="simpleCounterExample" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="simpleCounterExample"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {simpleCounterExample}
 
-        <hr id="objectStateExample" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="objectStateExample"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {objectStateExample}
 
-        <hr id="reusingSelectorsExample" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="reusingSelectorsExample"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {reusingSelectorsExample}
 
-        <hr id="listeningToStateChanges" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="listeningToStateChanges"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {listeningToStateChanges}
 
-        <hr id="moreListeningToStateChanges" className="col-span-2 border-emphasis-secondary border" />
+        <hr
+          id="moreListeningToStateChanges"
+          className="col-span-2 border-emphasis-secondary border"
+        />
         {moreListeningToStateChanges}
         {persistStateExample}
+
+        <Container
+          className={merge(
+            'col-span-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:place-items-center gap-4'
+          )}
+        >
+          <SubTitle className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 text-left w-full">
+            createContext
+          </SubTitle>
+
+          <snake-game apples={10}></snake-game>
+          <snake-game apples={10}></snake-game>
+          <snake-game apples={10}></snake-game>
+          <snake-game apples={10}></snake-game>
+        </Container>
       </div>
     </div>
   );
@@ -920,35 +1011,13 @@ function getContactsMock() {
   );
 }
 
-const useClickOutSide = (
-  callback: (htmlElement: HTMLElement) => void,
-  [isEnable, element, ...dependencies]: [
-    isEnable: boolean,
-    element: React.RefObject<HTMLElement> | (() => HTMLElement),
-    ...dependencies: unknown[]
-  ]
-) => {
-  const callbackRef = useRef(callback);
-
-  useEffect(() => {
-    if (!isEnable) return;
-
-    const target = isFunction(element) ? element() : element.current;
-    if (isNil(target)) return;
-
-    const root = document.getElementById('root')!;
-    const clickOutsideHandler = (event: MouseEvent) => {
-      if (event.target === target || (event.target as HTMLElement).contains(target)) return;
-      callbackRef.current(target);
-    };
-
-    root.addEventListener('click', clickOutsideHandler);
-    return () => root.removeEventListener('click', clickOutsideHandler);
-  }, [isEnable, element, ...dependencies]);
-};
-
-function Title({ className = '', children }: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) {
-  return <h1 className={merge(className, 'text-2xl font-bold text-text-title')}>{children}</h1>;
+function Title({
+  className = '',
+  children,
+}: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) {
+  return (
+    <h1 className={merge(className, 'text-2xl font-bold text-text-title')}>{children}</h1>
+  );
 }
 
 function SubTitle({
@@ -988,7 +1057,11 @@ function Container({
   );
 }
 
-function Button({ className = '', children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+function Button({
+  className = '',
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       className={merge(
@@ -1003,7 +1076,10 @@ function Button({ className = '', children, ...props }: React.ButtonHTMLAttribut
   );
 }
 
-function CodeBlock({ className = '', children }: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) {
+function CodeBlock({
+  className = '',
+  children,
+}: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) {
   return (
     <code
       className={merge(
@@ -1017,3 +1093,33 @@ function CodeBlock({ className = '', children }: React.PropsWithChildren<React.H
     </code>
   );
 }
+
+// no needed for CODEPEN
+
+const useClickOutSide = (
+  callback: (htmlElement: HTMLElement) => void,
+  [isEnable, element, ...dependencies]: [
+    isEnable: boolean,
+    element: React.RefObject<HTMLElement> | (() => HTMLElement),
+    ...dependencies: unknown[]
+  ]
+) => {
+  const callbackRef = useRef(callback);
+
+  useEffect(() => {
+    if (!isEnable) return;
+
+    const target = isFunction(element) ? element() : element.current;
+    if (isNil(target)) return;
+
+    const root = document.getElementById('root')!;
+    const clickOutsideHandler = (event: MouseEvent) => {
+      if (event.target === target || (event.target as HTMLElement).contains(target))
+        return;
+      callbackRef.current(target);
+    };
+
+    root.addEventListener('click', clickOutsideHandler);
+    return () => root.removeEventListener('click', clickOutsideHandler);
+  }, [isEnable, element, ...dependencies]);
+};
